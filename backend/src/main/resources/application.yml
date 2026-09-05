@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: fitmind-backend
+
+  datasource:
+    url: ${SUPABASE_DB_URL:${DB_URL:jdbc:postgresql://localhost:5432/fitmind}}
+    username: ${SUPABASE_DB_USERNAME:${DB_USERNAME:postgres}}
+    password: ${SUPABASE_DB_PASSWORD:${DB_PASSWORD:password}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 300000
+      max-lifetime: 600000
+      keepalive-time: 60000
+      connection-test-query: SELECT 1
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:validate}
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    validate-on-migrate: ${FLYWAY_VALIDATE:false}
+
+  jackson:
+    date-format: yyyy-MM-dd'T'HH:mm:ss
+    time-zone: UTC
+    default-property-inclusion: non_null
+    mapper:
+      accept-case-insensitive-enums: true
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:your-256-bit-secret-key-change-this-in-production-use-at-least-32-chars}
+    expiration: ${JWT_EXPIRATION:900000}        # 15 minutes in ms
+    refresh-expiration: ${JWT_REFRESH_EXPIRATION:604800000}  # 7 days in ms
+
+  ai:
+    api-key: ${AI_API_KEY:}
+    gemini-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent
+    enabled: ${AI_ENABLED:true}
+
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
+
+  nutrition:
+    default-water-target-ml: 2500
+    default-calorie-target: 2000
+
+logging:
+  level:
+    com.fitmind: DEBUG
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
