@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: fitmind-backend
+    runtime: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: singapore
+    healthCheckPath: /api/health
+    envVars:
+      - key: SUPABASE_DB_URL
+        sync: false
+      - key: SUPABASE_DB_USERNAME
+        sync: false
+      - key: SUPABASE_DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://*.vercel.app,http://localhost:5173,http://localhost:3000
