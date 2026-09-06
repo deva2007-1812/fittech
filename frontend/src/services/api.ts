@@ -1,6 +1,15 @@
 import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
+function getBaseUrl(): string {
+  let url = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').trim();
+  url = url.replace(/\/+$/, '');
+  if (!url.endsWith('/api')) {
+    url += '/api';
+  }
+  return url;
+}
+
+const BASE_URL = getBaseUrl();
 
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -15,7 +24,7 @@ const api: AxiosInstance = axios.create({
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('accessToken');
-    if (token && config.headers) {
+    if (token && token !== 'undefined' && token !== 'null' && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -75,6 +84,9 @@ export function getApiErrorMessage(error: unknown): string {
     if (error.response?.data?.message) {
       return error.response.data.message;
     }
+    if (error.response?.data?.error) {
+      return error.response.data.error;
+    }
     if (error.response?.status === 400) {
       return 'Invalid request data. Please check your inputs.';
     }
@@ -82,7 +94,7 @@ export function getApiErrorMessage(error: unknown): string {
       return 'Invalid credentials or session expired. Please sign in again.';
     }
     if (error.response?.status === 403) {
-      return 'You do not have permission to perform this action.';
+      return 'Request blocked (403 Forbidden). Please ensure the backend has finished deploying and CORS/origins are allowed.';
     }
     if (error.response?.status === 404) {
       return 'The requested resource was not found.';
