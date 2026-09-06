@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 export function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: 'demo@fitmind.ai', password: 'password123' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [showPw, setShowPw] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -39,18 +39,6 @@ export function LoginPage() {
     }
   };
 
-  const handleDemoLogin = async () => {
-    setIsLoading(true);
-    try {
-      await login('demo@fitmind.ai', 'password123');
-      toast.success('Signed in as Demo User!');
-      navigate('/dashboard');
-    } catch {
-      toast.error('Failed to sign in.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm(f => ({ ...f, [field]: e.target.value }));
@@ -117,14 +105,6 @@ export function LoginPage() {
           {isLoading ? <LoadingSpinner size="sm" /> : 'Sign in'}
         </button>
 
-        <button
-          type="button"
-          onClick={handleDemoLogin}
-          className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all flex items-center justify-center gap-1.5"
-          disabled={isLoading}
-        >
-          ⚡ Quick Demo Sign In (1-Click)
-        </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-neutral-500">
