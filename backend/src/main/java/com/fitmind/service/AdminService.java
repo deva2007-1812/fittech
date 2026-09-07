@@ -1,4 +1,4 @@
-package com.fitmind.service;
+﻿package com.fitmind.service;
 
 import com.fitmind.dto.*;
 import com.fitmind.dto.admin.*;
@@ -31,16 +31,20 @@ public class AdminService {
     private final WaterLogRepository waterLogRepository;
     private final SleepLogRepository sleepLogRepository;
 
-    public AdminStatsResponse getSystemStats() {
-        long totalUsers = userRepository.count();
-        long totalFoodLogs = foodLogRepository.count();
-        long totalWorkoutLogs = workoutLogRepository.count();
-        long totalWaterLogs = waterLogRepository.count();
-        long totalSleepLogs = sleepLogRepository.count();
-        long totalFoods = foodRepository.count();
+    // ─────────────────────────────────────────────────────────────────────────
+    // Stats
+    // ─────────────────────────────────────────────────────────────────────────
 
-        List<User> users = userRepository.findAll();
-        long adminCount = users.stream().filter(u -> "ADMIN".equalsIgnoreCase(u.getRole())).count();
+    @Transactional(readOnly = true)
+    public AdminStatsResponse getSystemStats() {
+        long totalUsers       = userRepository.count();
+        long totalFoodLogs    = foodLogRepository.count();
+        long totalWorkoutLogs = workoutLogRepository.count();
+        long totalWaterLogs   = waterLogRepository.count();
+        long totalSleepLogs   = sleepLogRepository.count();
+        long totalFoods       = foodRepository.count();
+
+        long adminCount    = userRepository.countByRole("ADMIN");
         long standardCount = totalUsers - adminCount;
 
         return AdminStatsResponse.builder()
@@ -55,11 +59,17 @@ public class AdminService {
                 .build();
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // User Management
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
     public List<AdminUserResponse> getAllUsers() {
         List<User> users = userRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        List<UserProfile> profiles = userProfileRepository.findAll();
+
+        // JOIN FETCH avoids LazyInitializationException on UserProfile.user
+        List<UserProfile> profiles = userProfileRepository.findAllWithUser();
         Map<UUID, UserProfile> profileMap = profiles.stream()
-                .filter(p -> p.getUser() != null)
                 .collect(Collectors.toMap(p -> p.getUser().getId(), p -> p, (a, b) -> a));
 
         return users.stream().map(user -> {
@@ -125,35 +135,21 @@ public class AdminService {
         log.info("Admin deleted user with id: {}", userId);
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // User Activity
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
     public AdminUserActivityResponse getUserActivity(UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         DateTimeFormatter dtf = DateTimeFormatter.ISO_LOCAL_DATE;
 
-        List<FoodLog> foodLogs = foodLogRepository.findAll().stream()
-                .filter(fl -> fl.getUser().getId().equals(userId))
-                .sorted((a, b) -> b.getLoggedAt().compareTo(a.getLoggedAt()))
-                .limit(20)
-                .toList();
-
-        List<WorkoutLog> workoutLogs = workoutLogRepository.findAll().stream()
-                .filter(w -> w.getUser().getId().equals(userId))
-                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
-                .limit(20)
-                .toList();
-
-        List<WaterLog> waterLogs = waterLogRepository.findAll().stream()
-                .filter(w -> w.getUser().getId().equals(userId))
-                .sorted((a, b) -> b.getLoggedAt().compareTo(a.getLoggedAt()))
-                .limit(20)
-                .toList();
-
-        List<SleepLog> sleepLogs = sleepLogRepository.findAll().stream()
-                .filter(s -> s.getUser().getId().equals(userId))
-                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
-                .limit(20)
-                .toList();
+        List<FoodLog>    foodLogs    = foodLogRepository.findTop20ByUserId(userId);
+        List<WorkoutLog> workoutLogs = workoutLogRepository.findTop20ByUserId(userId);
+        List<WaterLog>   waterLogs   = waterLogRepository.findTop20ByUserId(userId);
+        List<SleepLog>   sleepLogs   = sleepLogRepository.findTop20ByUserId(userId);
 
         List<FoodLogResponse> foodResponses = foodLogs.stream().map(fl -> FoodLogResponse.builder()
                 .id(fl.getId().toString())
@@ -212,6 +208,10 @@ public class AdminService {
                 .build();
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Food Catalog Management
+    // ─────────────────────────────────────────────────────────────────────────
+
     @Transactional
     public FoodResponse addFood(FoodAdminRequest request) {
         Food food = Food.builder()
@@ -259,6 +259,10 @@ public class AdminService {
         foodRepository.deleteById(foodId);
         log.info("Admin deleted food with id: {}", foodId);
     }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────────────────────────────────
 
     private FoodResponse toFoodResponse(Food food) {
         return FoodResponse.builder()

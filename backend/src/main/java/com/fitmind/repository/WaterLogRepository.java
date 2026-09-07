@@ -26,4 +26,7 @@ public interface WaterLogRepository extends JpaRepository<WaterLog, UUID> {
 
     @Query("SELECT SUM(w.amount) FROM WaterLog w WHERE w.user.id = :userId AND DATE(w.loggedAt) = :date")
     Integer sumAmountByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
+
+    @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId ORDER BY w.loggedAt DESC LIMIT 20")
+    List<WaterLog> findTop20ByUserId(@Param("userId") UUID userId);
 }

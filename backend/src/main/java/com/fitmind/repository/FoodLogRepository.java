@@ -26,4 +26,7 @@ public interface FoodLogRepository extends JpaRepository<FoodLog, UUID> {
 
     @Query("SELECT SUM(fl.calories) FROM FoodLog fl WHERE fl.user.id = :userId AND DATE(fl.loggedAt) = :date")
     Double sumCaloriesByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
+
+    @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId ORDER BY fl.loggedAt DESC LIMIT 20")
+    List<FoodLog> findTop20ByUserId(@Param("userId") UUID userId);
 }

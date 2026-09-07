@@ -22,4 +22,7 @@ public interface SleepLogRepository extends JpaRepository<SleepLog, UUID> {
                                              @Param("to") LocalDate to);
 
     Optional<SleepLog> findByIdAndUserId(UUID id, UUID userId);
+
+    @Query("SELECT s FROM SleepLog s WHERE s.user.id = :userId ORDER BY s.createdAt DESC LIMIT 20")
+    List<SleepLog> findTop20ByUserId(@Param("userId") UUID userId);
 }
