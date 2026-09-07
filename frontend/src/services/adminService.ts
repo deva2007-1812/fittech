@@ -38,10 +38,8 @@ export const adminService = {
   },
 
   // Food management
-  getAllFoods: async (query?: string): Promise<AdminFoodItem[]> => {
-    const res = await api.get<AdminFoodItem[]>('/foods', {
-      params: query ? { query } : undefined,
-    });
+  getAllFoods: async (): Promise<AdminFoodItem[]> => {
+    const res = await api.get<AdminFoodItem[]>('/admin/foods');
     return res.data;
   },
 

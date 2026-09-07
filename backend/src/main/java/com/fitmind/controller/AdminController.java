@@ -59,6 +59,12 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUserActivity(userId));
     }
 
+    @GetMapping("/foods")
+    @Operation(summary = "List all food items in the master database")
+    public ResponseEntity<List<FoodResponse>> getAllFoods() {
+        return ResponseEntity.ok(adminService.getAllFoods());
+    }
+
     @PostMapping("/foods")
     @Operation(summary = "Add a new food item to the master database")
     public ResponseEntity<FoodResponse> addFood(@Valid @RequestBody FoodAdminRequest request) {

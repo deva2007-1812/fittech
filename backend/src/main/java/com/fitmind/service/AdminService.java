@@ -1,4 +1,4 @@
-﻿package com.fitmind.service;
+package com.fitmind.service;
 
 import com.fitmind.dto.*;
 import com.fitmind.dto.admin.*;
@@ -211,6 +211,14 @@ public class AdminService {
     // ─────────────────────────────────────────────────────────────────────────
     // Food Catalog Management
     // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public List<FoodResponse> getAllFoods() {
+        return foodRepository.findAll(Sort.by(Sort.Direction.ASC, "name"))
+                .stream()
+                .map(this::toFoodResponse)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public FoodResponse addFood(FoodAdminRequest request) {
