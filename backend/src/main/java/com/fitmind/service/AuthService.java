@@ -99,6 +99,7 @@ public class AuthService {
                 .id(user.getId().toString())
                 .email(user.getEmail())
                 .name(user.getName())
+                .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

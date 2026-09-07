@@ -3,6 +3,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  role?: 'USER' | 'ADMIN' | string;
   age?: number;
   height?: number; // cm
   weight?: number; // kg
@@ -53,6 +54,7 @@ export interface FoodEntry {
   userId: string;
   foodName: string;
   quantity: string;
+  unit?: string;
   calories: number;
   protein: number; // g
   carbs: number;   // g
@@ -92,6 +94,7 @@ export interface WorkoutEntry {
   sets?: number;
   reps?: number;
   notes?: string;
+  caloriesBurned?: number;
   date: string;
   createdAt?: string;
 }
@@ -173,3 +176,67 @@ export interface PaginatedResponse<T> {
 }
 
 export type DateRange = '7d' | '30d' | '90d';
+
+// ─── Admin Management ────────────────────────────────────────────────────────
+export interface AdminStats {
+  totalUsers: number;
+  adminUsers: number;
+  standardUsers: number;
+  totalFoodLogs: number;
+  totalWorkoutLogs: number;
+  totalWaterLogs: number;
+  totalSleepLogs: number;
+  totalFoodsInDatabase: number;
+}
+
+export interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'USER' | 'ADMIN' | string;
+  age?: number;
+  height?: number;
+  weight?: number;
+  activityLevel?: ActivityLevel;
+  fitnessGoal?: FitnessGoal;
+  dailyCalorieTarget?: number;
+  dailyWaterTarget?: number;
+  profileComplete?: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  totalFoodLogsCount?: number;
+  totalWorkoutLogsCount?: number;
+}
+
+export interface AdminFoodItem {
+  id: string;
+  name: string;
+  servingSize: number;
+  servingUnit: string;
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  fiber: number;
+}
+
+export interface FoodAdminPayload {
+  name: string;
+  servingSize: number;
+  servingUnit: string;
+  calories: number;
+  protein: number;
+  carbohydrates: number;
+  fat: number;
+  fiber?: number;
+}
+
+export interface AdminUserActivity {
+  userId: string;
+  userName: string;
+  userEmail: string;
+  recentFoodLogs: FoodEntry[];
+  recentWorkoutLogs: WorkoutEntry[];
+  recentWaterLogs: WaterEntry[];
+  recentSleepLogs: SleepEntry[];
+}

@@ -44,3 +44,27 @@ export function PublicRoute() {
 
   return <Outlet />;
 }
+
+export function AdminRoute() {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-neutral-50">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  const role = user?.role ? user.role.toUpperCase() : 'USER';
+  if (role !== 'ADMIN') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+}

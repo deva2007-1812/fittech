@@ -101,6 +101,7 @@ public class UserService {
                 .id(user.getId().toString())
                 .email(user.getEmail())
                 .name(user.getName())
+                .role(user.getRole())
                 .profileComplete(profileComplete)
                 .createdAt(user.getCreatedAt());
 

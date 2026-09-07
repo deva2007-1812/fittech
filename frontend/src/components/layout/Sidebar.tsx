@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Bot, Utensils, Dumbbell, TrendingUp,
-  History, User, Settings, Droplets, Moon, LogOut, Menu, X, Zap
+  History, User, Settings, Droplets, Moon, LogOut, Menu, X, Zap,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../utils/helpers';
@@ -28,6 +29,8 @@ export function Sidebar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+
+  const isAdmin = user?.role?.toUpperCase() === 'ADMIN';
 
   const handleLogout = async () => {
     try {
@@ -73,7 +76,7 @@ export function Sidebar() {
               cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
                 isActive
-                  ? 'bg-emerald-50 text-emerald-700'
+                  ? 'bg-emerald-50 text-emerald-700 font-semibold'
                   : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-800',
                 collapsed && 'justify-center'
               )
@@ -84,6 +87,33 @@ export function Sidebar() {
             {!collapsed && <span>{label}</span>}
           </NavLink>
         ))}
+
+        {/* Admin Link if User is Admin */}
+        {isAdmin && (
+          <div className="pt-2 mt-2 border-t border-neutral-100">
+            <NavLink
+              to="/admin"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150',
+                  isActive
+                    ? 'bg-purple-50 text-purple-700 font-semibold shadow-sm'
+                    : 'text-purple-600 hover:bg-purple-50 hover:text-purple-800',
+                  collapsed && 'justify-center'
+                )
+              }
+              title={collapsed ? 'Admin Portal' : undefined}
+            >
+              <ShieldCheck size={18} className="flex-shrink-0 text-purple-600" />
+              {!collapsed && (
+                <div className="flex items-center justify-between flex-1">
+                  <span>Admin Portal</span>
+                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-purple-100 text-purple-700">PRO</span>
+                </div>
+              )}
+            </NavLink>
+          </div>
+        )}
       </nav>
 
       {/* Bottom Section */}
@@ -116,7 +146,12 @@ export function Sidebar() {
                 {user?.name?.[0]?.toUpperCase() || 'U'}
               </div>
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-neutral-800 truncate">{user?.name || 'User'}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-xs font-semibold text-neutral-800 truncate">{user?.name || 'User'}</p>
+                  {isAdmin && (
+                    <span className="text-[9px] font-bold px-1 rounded bg-amber-100 text-amber-800">ADMIN</span>
+                  )}
+                </div>
                 <p className="text-[10px] text-neutral-400 truncate">{user?.email || ''}</p>
               </div>
             </div>
@@ -139,3 +174,4 @@ export function Sidebar() {
     </aside>
   );
 }
+

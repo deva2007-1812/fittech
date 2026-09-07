@@ -30,6 +30,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Builder.Default
+    @Column(nullable = false, length = 20)
+    private String role = "USER";
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private OffsetDateTime createdAt;

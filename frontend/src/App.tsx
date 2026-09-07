@@ -2,7 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
-import { ProtectedRoute, PublicRoute } from './routes/ProtectedRoute';
+import { ProtectedRoute, PublicRoute, AdminRoute } from './routes/ProtectedRoute';
 import { AuthLayout } from './layouts/AuthLayout';
 import { AppLayout } from './layouts/AppLayout';
 import { LoadingSpinner } from './components/shared/LoadingSpinner';
@@ -21,6 +21,7 @@ const ProgressPage = lazy(() => import('./pages/app/ProgressPage').then(m => ({ 
 const HistoryPage = lazy(() => import('./pages/app/HistoryPage').then(m => ({ default: m.HistoryPage })));
 const ProfilePage = lazy(() => import('./pages/app/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const SettingsPage = lazy(() => import('./pages/app/SettingsPage').then(m => ({ default: m.SettingsPage })));
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage').then(m => ({ default: m.AdminDashboardPage })));
 
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -78,6 +79,13 @@ function App() {
                 <Route path="/history" element={<HistoryPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/settings" element={<SettingsPage />} />
+              </Route>
+            </Route>
+
+            {/* Admin routes */}
+            <Route element={<AdminRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/admin" element={<AdminDashboardPage />} />
               </Route>
             </Route>
 
