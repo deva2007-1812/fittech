@@ -8,6 +8,8 @@ services:
     region: singapore
     healthCheckPath: /api/health
     envVars:
+      - key: PORT
+        value: 10000
       - key: SUPABASE_DB_URL
         sync: false
       - key: SUPABASE_DB_USERNAME
