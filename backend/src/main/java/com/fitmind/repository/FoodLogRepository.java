@@ -29,4 +29,6 @@ public interface FoodLogRepository extends JpaRepository<FoodLog, UUID> {
 
     @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId ORDER BY fl.loggedAt DESC LIMIT 20")
     List<FoodLog> findTop20ByUserId(@Param("userId") UUID userId);
+
+    long countByUserId(UUID userId);
 }

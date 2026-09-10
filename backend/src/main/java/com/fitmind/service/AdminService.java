@@ -75,6 +75,8 @@ public class AdminService {
         return users.stream().map(user -> {
             UserProfile profile = profileMap.get(user.getId());
             boolean complete = profile != null && profile.getAge() != null;
+            long foodCount = foodLogRepository.countByUserId(user.getId());
+            long workoutCount = workoutLogRepository.countByUserId(user.getId());
 
             return AdminUserResponse.builder()
                     .id(user.getId().toString())
@@ -91,6 +93,8 @@ public class AdminService {
                     .profileComplete(complete)
                     .createdAt(user.getCreatedAt())
                     .updatedAt(user.getUpdatedAt())
+                    .totalFoodLogsCount(foodCount)
+                    .totalWorkoutLogsCount(workoutCount)
                     .build();
         }).collect(Collectors.toList());
     }
@@ -107,6 +111,8 @@ public class AdminService {
 
         UserProfile profile = userProfileRepository.findByUserId(userId).orElse(null);
         boolean complete = profile != null && profile.getAge() != null;
+        long foodCount = foodLogRepository.countByUserId(user.getId());
+        long workoutCount = workoutLogRepository.countByUserId(user.getId());
 
         return AdminUserResponse.builder()
                 .id(user.getId().toString())
@@ -123,6 +129,8 @@ public class AdminService {
                 .profileComplete(complete)
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
+                .totalFoodLogsCount(foodCount)
+                .totalWorkoutLogsCount(workoutCount)
                 .build();
     }
 

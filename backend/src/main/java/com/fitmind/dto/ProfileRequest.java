@@ -11,6 +11,9 @@ import lombok.*;
 @Builder
 public class ProfileRequest {
 
+    @Size(max = 100, message = "Name must be at most 100 characters")
+    private String name;
+
     @Min(value = 10, message = "Age must be at least 10")
     @Max(value = 120, message = "Age must be at most 120")
     private Integer age;

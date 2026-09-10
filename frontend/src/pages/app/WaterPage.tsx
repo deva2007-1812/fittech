@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Droplets } from 'lucide-react';
+import { Plus, Droplets, Trash2 } from 'lucide-react';
 import { waterService } from '../../services/waterService';
 import { getApiErrorMessage } from '../../services/api';
 import { formatWater, calcPercent } from '../../utils/helpers';
@@ -59,6 +59,21 @@ export function WaterPage() {
     }
     addWater(amount);
     setCustomAmount('');
+  };
+
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      await waterService.deleteWater(id);
+      toast.success('Water entry removed');
+      await fetchWater();
+    } catch (err) {
+      toast.error(getApiErrorMessage(err));
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   const fillHeight = Math.min(pct, 100);
@@ -162,12 +177,22 @@ export function WaterPage() {
         ) : (
           <div className="space-y-2">
             {[...log.entries].reverse().map((entry, i) => (
-              <div key={entry.id} className="flex items-center justify-between py-2 border-b border-neutral-50 last:border-0">
+              <div key={entry.id} className="flex items-center justify-between py-2 border-b border-neutral-50 last:border-0 group">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-blue-400 flex-shrink-0" />
                   <span className="text-sm text-neutral-600">Entry {log.entries.length - i}</span>
                 </div>
-                <span className="text-sm font-semibold text-blue-600">{formatWater(entry.amount)}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm font-semibold text-blue-600">{formatWater(entry.amount)}</span>
+                  <button
+                    onClick={() => handleDelete(entry.id)}
+                    disabled={deletingId === entry.id}
+                    className="opacity-0 group-hover:opacity-100 p-1.5 rounded-lg hover:bg-red-50 text-neutral-400 hover:text-red-500 transition-all duration-150"
+                    aria-label={`Delete water entry ${formatWater(entry.amount)}`}
+                  >
+                    {deletingId === entry.id ? <LoadingSpinner size="sm" /> : <Trash2 size={14} />}
+                  </button>
+                </div>
               </div>
             ))}
           </div>

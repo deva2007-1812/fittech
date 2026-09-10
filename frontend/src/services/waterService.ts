@@ -16,4 +16,8 @@ export const waterService = {
     const response = await api.get(`/water/history?days=${days}`);
     return response.data;
   },
+
+  deleteWater: async (id: string): Promise<void> => {
+    await api.delete(`/water/${id}`);
+  },
 };

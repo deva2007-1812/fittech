@@ -5,7 +5,7 @@ import { workoutService } from '../../services/workoutService';
 import { waterService } from '../../services/waterService';
 import { sleepService } from '../../services/sleepService';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
-import { formatDate, formatWater, formatDuration } from '../../utils/helpers';
+import { formatDate, formatWater, formatDuration, getLocalDateString } from '../../utils/helpers';
 import type { NutritionLog, WorkoutEntry, SleepEntry } from '../../types';
 
 interface DaySummary {
@@ -39,7 +39,7 @@ export function HistoryPage() {
       const list: DaySummary[] = Array.from({ length: 7 }, (_, i) => {
         const d = new Date();
         d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
+        const dateStr = getLocalDateString(d);
 
         const nut = (nutritionHist || []).find(n => n.date === dateStr);
         const wks = (workoutHist || []).filter(w => w.date === dateStr);

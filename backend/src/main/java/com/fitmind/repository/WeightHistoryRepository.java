@@ -24,5 +24,7 @@ public interface WeightHistoryRepository extends JpaRepository<WeightHistory, UU
 
     Optional<WeightHistory> findFirstByUserIdOrderByRecordedDateDesc(UUID userId);
 
+    Optional<WeightHistory> findByUserIdAndRecordedDate(UUID userId, LocalDate recordedDate);
+
     Optional<WeightHistory> findByIdAndUserId(UUID id, UUID userId);
 }

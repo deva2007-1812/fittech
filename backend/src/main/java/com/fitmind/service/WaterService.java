@@ -30,11 +30,14 @@ public class WaterService {
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId.toString()));
 
         LocalDate date = parseDate(request.getDate());
+        OffsetDateTime loggedAt = date.equals(LocalDate.now())
+                ? OffsetDateTime.now()
+                : date.atTime(12, 0).atOffset(OffsetDateTime.now().getOffset());
 
         WaterLog log = WaterLog.builder()
                 .user(user)
                 .amount(request.getAmount())
-                .loggedAt(date.atStartOfDay().atOffset(ZoneOffset.UTC))
+                .loggedAt(loggedAt)
                 .build();
 
         return toResponse(waterLogRepository.save(log));

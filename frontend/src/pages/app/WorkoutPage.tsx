@@ -5,7 +5,7 @@ import { EmptyState } from '../../components/shared/EmptyState';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
 import { workoutService } from '../../services/workoutService';
 import { getApiErrorMessage } from '../../services/api';
-import { formatDuration } from '../../utils/helpers';
+import { formatDuration, getLocalDateString } from '../../utils/helpers';
 import type { WorkoutEntry } from '../../types';
 import toast from 'react-hot-toast';
 
@@ -109,7 +109,7 @@ export function WorkoutPage() {
         sets: form.sets ? Number(form.sets) : undefined,
         reps: form.reps ? Number(form.reps) : undefined,
         notes: form.notes.trim() || undefined,
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDateString(),
       });
       toast.success('Workout logged to database!');
       setShowModal(false);

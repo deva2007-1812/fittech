@@ -71,27 +71,72 @@ public class NutritionService {
 
         LocalDate date = parseDate(request.getDate());
         double quantity = parseQuantity(request.getQuantity());
+        String rawQty = request.getQuantity() != null ? request.getQuantity().trim().toLowerCase() : "";
         MealType mealType = request.getMealType() != null ? request.getMealType() : MealType.SNACK;
 
         // Try to find food in database for accurate nutrition
         List<Food> matches = foodRepository.searchByNameNative(request.getFoodName(), 1);
         FoodLog log;
+        OffsetDateTime loggedAt = date.equals(LocalDate.now())
+                ? OffsetDateTime.now()
+                : date.atTime(12, 0).atOffset(OffsetDateTime.now().getOffset());
 
         if (!matches.isEmpty()) {
             Food food = matches.get(0);
-            double ratio = quantity / food.getServingSize().doubleValue();
+            double servingSize = food.getServingSize() != null ? food.getServingSize().doubleValue() : 100.0;
+            String servingUnit = food.getServingUnit() != null ? food.getServingUnit().toLowerCase() : "g";
+            double ratio;
+            String finalUnit;
+
+            boolean isPieceUnit = servingUnit.contains("piece") || servingUnit.contains("item")
+                    || servingUnit.contains("slice") || servingUnit.contains("egg") || servingUnit.contains("roti");
+            boolean userSpecifiedGrams = rawQty.matches(".*\\b(g|gm|grams?)\\b.*") || (rawQty.endsWith("g") && !rawQty.endsWith("egg"));
+            boolean userSpecifiedMl = rawQty.matches(".*\\b(ml|l|liters?|milliliters?)\\b.*");
+            boolean userSpecifiedServing = rawQty.contains("serving") || rawQty.contains("cup")
+                    || rawQty.contains("bowl") || rawQty.contains("plate") || rawQty.contains("portion");
+
+            if (isPieceUnit) {
+                if (userSpecifiedGrams && servingSize > 0) {
+                    ratio = quantity / servingSize;
+                    finalUnit = "g";
+                } else {
+                    ratio = quantity;
+                    finalUnit = food.getServingUnit();
+                }
+            } else {
+                // food serving unit is g or ml (or standard serving)
+                if (userSpecifiedServing) {
+                    ratio = quantity;
+                    finalUnit = "serving";
+                } else if (userSpecifiedGrams || userSpecifiedMl) {
+                    ratio = servingSize > 0 ? (quantity / servingSize) : 1.0;
+                    finalUnit = food.getServingUnit();
+                } else {
+                    // Raw number without unit: e.g. "1" or "2" vs "150"
+                    if (quantity <= 10.0 && servingSize >= 20.0) {
+                        // User typed "1" or "2" for rice/dal/chicken -> means 1 or 2 servings
+                        ratio = quantity;
+                        finalUnit = "serving";
+                    } else {
+                        // User typed "150" for rice -> means 150g
+                        ratio = servingSize > 0 ? (quantity / servingSize) : 1.0;
+                        finalUnit = food.getServingUnit();
+                    }
+                }
+            }
+
             log = FoodLog.builder()
                     .user(user)
                     .food(food)
                     .foodName(food.getName())
                     .quantity(BigDecimal.valueOf(quantity))
-                    .unit(food.getServingUnit())
+                    .unit(finalUnit)
                     .mealType(mealType)
-                    .calories(BigDecimal.valueOf(food.getCalories().doubleValue() * ratio))
-                    .protein(BigDecimal.valueOf(food.getProtein().doubleValue() * ratio))
-                    .carbohydrates(BigDecimal.valueOf(food.getCarbohydrates().doubleValue() * ratio))
-                    .fat(BigDecimal.valueOf(food.getFat().doubleValue() * ratio))
-                    .loggedAt(date.atStartOfDay().atOffset(ZoneOffset.UTC))
+                    .calories(BigDecimal.valueOf(round(food.getCalories().doubleValue() * ratio)))
+                    .protein(BigDecimal.valueOf(round(food.getProtein().doubleValue() * ratio)))
+                    .carbohydrates(BigDecimal.valueOf(round(food.getCarbohydrates().doubleValue() * ratio)))
+                    .fat(BigDecimal.valueOf(round(food.getFat().doubleValue() * ratio)))
+                    .loggedAt(loggedAt)
                     .build();
         } else {
             // Food not found – create entry with name only (user can provide manual data)
@@ -105,7 +150,7 @@ public class NutritionService {
                     .protein(BigDecimal.ZERO)
                     .carbohydrates(BigDecimal.ZERO)
                     .fat(BigDecimal.ZERO)
-                    .loggedAt(date.atStartOfDay().atOffset(ZoneOffset.UTC))
+                    .loggedAt(loggedAt)
                     .build();
         }
 
@@ -125,6 +170,10 @@ public class NutritionService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", userId.toString()));
 
+        OffsetDateTime loggedAt = date.equals(LocalDate.now())
+                ? OffsetDateTime.now()
+                : date.atTime(12, 0).atOffset(OffsetDateTime.now().getOffset());
+
         FoodLog log = FoodLog.builder()
                 .user(user)
                 .food(food)
@@ -136,7 +185,7 @@ public class NutritionService {
                 .protein(BigDecimal.valueOf(protein))
                 .carbohydrates(BigDecimal.valueOf(carbs))
                 .fat(BigDecimal.valueOf(fat))
-                .loggedAt(date.atStartOfDay().atOffset(ZoneOffset.UTC))
+                .loggedAt(loggedAt)
                 .build();
 
         return toFoodLogResponse(foodLogRepository.save(log));

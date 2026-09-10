@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 public class ProgressService {
 
     private final WeightHistoryRepository weightHistoryRepository;
+    private final UserProfileRepository userProfileRepository;
     private final FoodLogRepository foodLogRepository;
     private final WaterLogRepository waterLogRepository;
     private final SleepLogRepository sleepLogRepository;
@@ -41,6 +42,17 @@ public class ProgressService {
                         .date(w.getRecordedDate().toString())
                         .build())
                 .collect(Collectors.toList());
+
+        if (weightHistory.isEmpty()) {
+            userProfileRepository.findByUserId(userId)
+                    .filter(p -> p.getWeight() != null)
+                    .ifPresent(p -> weightHistory.add(WeightEntryResponse.builder()
+                            .id("profile-current")
+                            .userId(userId.toString())
+                            .weight(p.getWeight().doubleValue())
+                            .date(to.toString())
+                            .build()));
+        }
 
         // Calorie history – group food logs by date
         List<FoodLog> foodLogs = foodLogRepository.findByUserIdAndDateRange(userId, from, to);

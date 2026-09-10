@@ -28,4 +28,6 @@ public interface WorkoutLogRepository extends JpaRepository<WorkoutLog, UUID> {
 
     @Query("SELECT w FROM WorkoutLog w WHERE w.user.id = :userId ORDER BY w.createdAt DESC LIMIT 20")
     List<WorkoutLog> findTop20ByUserId(@Param("userId") UUID userId);
+
+    long countByUserId(UUID userId);
 }

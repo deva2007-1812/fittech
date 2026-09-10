@@ -8,9 +8,8 @@ import { Modal } from '../../components/shared/Modal';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
 import { progressService } from '../../services/progressService';
 import { getApiErrorMessage } from '../../services/api';
-import { formatShortDate } from '../../utils/helpers';
+import { formatShortDate, cn, getLocalDateString } from '../../utils/helpers';
 import type { DateRange, ProgressData } from '../../types';
-import { cn } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 
 function ChartCard({
@@ -78,7 +77,7 @@ export function ProgressPage() {
 
     setIsSubmittingWeight(true);
     try {
-      await progressService.logWeight(w, new Date().toISOString().split('T')[0]);
+      await progressService.logWeight(w, getLocalDateString());
       toast.success(`Weight (${w} kg) saved to database!`);
       setShowWeightModal(false);
       setWeightInput('');

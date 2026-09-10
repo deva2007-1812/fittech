@@ -7,9 +7,8 @@ import { Modal } from '../../components/shared/Modal';
 import { LoadingSpinner } from '../../components/shared/LoadingSpinner';
 import { sleepService } from '../../services/sleepService';
 import { getApiErrorMessage } from '../../services/api';
-import { formatShortDate } from '../../utils/helpers';
+import { formatShortDate, cn, getLocalDateString } from '../../utils/helpers';
 import type { SleepEntry } from '../../types';
-import { cn } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 
 const SLEEP_GOAL = 8;
@@ -62,7 +61,7 @@ export function SleepPage() {
         duration: dur,
         bedtime: form.bedtime,
         wakeTime: form.wakeTime,
-        date: new Date().toISOString().split('T')[0],
+        date: getLocalDateString(),
       });
       toast.success('Sleep logged to database!', { icon: '😴' });
       setShowModal(false);

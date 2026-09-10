@@ -330,10 +330,12 @@ function AddFoodModal({
                     key={item.id}
                     type="button"
                     onClick={() => {
+                      const unit = (item.servingUnit || '').toLowerCase();
+                      const isPiece = unit.includes('piece') || unit.includes('item') || unit.includes('slice') || unit.includes('egg');
                       setForm(f => ({
                         ...f,
                         foodName: item.name,
-                        quantity: `${item.servingSize} ${item.servingUnit}`,
+                        quantity: isPiece ? '1 piece' : `${item.servingSize}${item.servingUnit}`,
                       }));
                       setSearchResults([]);
                     }}

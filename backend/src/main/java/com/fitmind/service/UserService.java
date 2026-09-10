@@ -3,16 +3,20 @@ package com.fitmind.service;
 import com.fitmind.dto.*;
 import com.fitmind.entity.User;
 import com.fitmind.entity.UserProfile;
+import com.fitmind.entity.WeightHistory;
 import com.fitmind.exception.ResourceNotFoundException;
 import com.fitmind.fitness.FitnessCalculationService;
 import com.fitmind.repository.UserProfileRepository;
 import com.fitmind.repository.UserRepository;
+import com.fitmind.repository.WeightHistoryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,6 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
+    private final WeightHistoryRepository weightHistoryRepository;
     private final FitnessCalculationService fitnessCalculationService;
 
     public UserResponse getUserResponse(UUID userId) {
@@ -34,12 +39,21 @@ public class UserService {
     @Transactional
     public UserResponse updateProfile(UUID userId, ProfileRequest request) {
         User user = findUser(userId);
+        if (request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName().trim());
+            userRepository.save(user);
+        }
+
         UserProfile profile = userProfileRepository.findByUserId(userId)
                 .orElse(UserProfile.builder().user(user).build());
 
         applyProfileRequest(profile, request);
         fitnessCalculationService.applyTargets(profile);
         userProfileRepository.save(profile);
+
+        if (request.getWeight() != null) {
+            syncWeightHistory(user, request.getWeight());
+        }
 
         return toUserResponse(user, profile, true);
     }
@@ -58,13 +72,40 @@ public class UserService {
     @Transactional
     public ProfileResponse saveProfile(UUID userId, ProfileRequest request) {
         User user = findUser(userId);
+        if (request.getName() != null && !request.getName().isBlank()) {
+            user.setName(request.getName().trim());
+            userRepository.save(user);
+        }
+
         UserProfile profile = userProfileRepository.findByUserId(userId)
                 .orElse(UserProfile.builder().user(user).build());
 
         applyProfileRequest(profile, request);
         fitnessCalculationService.applyTargets(profile);
         profile = userProfileRepository.save(profile);
+
+        if (request.getWeight() != null) {
+            syncWeightHistory(user, request.getWeight());
+        }
+
         return toProfileResponse(profile);
+    }
+
+    private void syncWeightHistory(User user, Double weight) {
+        if (weight == null) return;
+        LocalDate today = LocalDate.now();
+        Optional<WeightHistory> existing = weightHistoryRepository.findByUserIdAndRecordedDate(user.getId(), today);
+        if (existing.isPresent()) {
+            WeightHistory entry = existing.get();
+            entry.setWeight(BigDecimal.valueOf(weight));
+            weightHistoryRepository.save(entry);
+        } else {
+            weightHistoryRepository.save(WeightHistory.builder()
+                    .user(user)
+                    .weight(BigDecimal.valueOf(weight))
+                    .recordedDate(today)
+                    .build());
+        }
     }
 
     public DailyTargetsResponse getDailyTargets(UUID userId) {

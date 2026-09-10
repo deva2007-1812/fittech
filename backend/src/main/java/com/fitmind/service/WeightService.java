@@ -20,6 +20,7 @@ public class WeightService {
 
     private final WeightHistoryRepository weightHistoryRepository;
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
 
     @Transactional
     public WeightEntryResponse logWeight(UUID userId, WeightRequest request) {
@@ -51,7 +52,9 @@ public class WeightService {
     public Double getLatestWeight(UUID userId) {
         return weightHistoryRepository.findFirstByUserIdOrderByRecordedDateDesc(userId)
                 .map(w -> w.getWeight().doubleValue())
-                .orElse(null);
+                .orElseGet(() -> userProfileRepository.findByUserId(userId)
+                        .map(p -> p.getWeight() != null ? p.getWeight().doubleValue() : null)
+                        .orElse(null));
     }
 
     public ProgressDataResponse getProgressData(UUID userId, String range) {
