@@ -4,7 +4,7 @@ import { Zap } from 'lucide-react';
 
 export function AuthLayout() {
   return (
-    <div className="min-h-screen bg-neutral-50 flex">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex">
       {/* Left panel – branding (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-emerald-600 flex-col justify-between p-12 relative overflow-hidden">
         {/* Background pattern */}
@@ -66,7 +66,7 @@ export function AuthLayout() {
             <div className="w-8 h-8 rounded-xl bg-emerald-600 flex items-center justify-center">
               <Zap size={16} className="text-white" />
             </div>
-            <span className="text-lg font-bold text-neutral-900">FitMind AI</span>
+            <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">FitMind AI</span>
           </div>
           <Outlet />
         </div>

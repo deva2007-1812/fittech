@@ -51,14 +51,14 @@ export function Modal({ isOpen, onClose, title, children, size = 'md', className
 
       {/* Panel */}
       <div className={cn(
-        'relative w-full bg-white rounded-2xl shadow-xl animate-slide-up',
+        'relative w-full bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl shadow-xl animate-slide-up text-neutral-900 dark:text-neutral-100',
         sizeMap[size],
         className
       )}>
         {/* Header */}
         {title && (
-          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-neutral-100">
-            <h2 id="modal-title" className="text-lg font-semibold text-neutral-900">{title}</h2>
+          <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-neutral-100 dark:border-neutral-800">
+            <h2 id="modal-title" className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{title}</h2>
             <button
               onClick={onClose}
               className="btn-ghost p-1.5 -mr-1.5"

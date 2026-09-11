@@ -9,11 +9,13 @@ import { sleepService } from '../../services/sleepService';
 import { getApiErrorMessage } from '../../services/api';
 import { formatShortDate, cn, getLocalDateString } from '../../utils/helpers';
 import type { SleepEntry } from '../../types';
+import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
 const SLEEP_GOAL = 8;
 
 export function SleepPage() {
+  const { isDark } = useTheme();
   const [todaySleep, setTodaySleep] = useState<SleepEntry | null>(null);
   const [history, setHistory] = useState<SleepEntry[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -153,9 +155,9 @@ export function SleepPage() {
       {/* Sleep tips */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Recommended', value: '7–9 hrs', color: 'bg-teal-50 text-teal-700' },
-          { label: 'Your Average', value: avgHours !== '—' ? `${avgHours} hrs` : '—', color: 'bg-blue-50 text-blue-700' },
-          { label: 'Best Night', value: bestNight, color: 'bg-purple-50 text-purple-700' },
+          { label: 'Recommended', value: '7–9 hrs', color: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300' },
+          { label: 'Your Average', value: avgHours !== '—' ? `${avgHours} hrs` : '—', color: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300' },
+          { label: 'Best Night', value: bestNight, color: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300' },
         ].map(({ label, value, color }) => (
           <div key={label} className={`${color} rounded-2xl p-4 text-center`}>
             <p className="text-xl font-bold">{value}</p>
@@ -168,15 +170,22 @@ export function SleepPage() {
       <div className="card p-5">
         <h3 className="section-title mb-4">Sleep History (Last 7 Days)</h3>
         {chartData.length === 0 ? (
-          <p className="text-sm text-neutral-400 text-center py-10">No sleep history recorded yet. Start logging your sleep above!</p>
+          <p className="text-sm text-neutral-400 dark:text-neutral-500 text-center py-10">No sleep history recorded yet. Start logging your sleep above!</p>
         ) : (
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={chartData} barSize={28}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f5f5f5" />
-              <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#a3a3a3' }} axisLine={false} tickLine={false} />
-              <YAxis domain={[0, 12]} tick={{ fontSize: 11, fill: '#a3a3a3' }} axisLine={false} tickLine={false} tickCount={5} />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#262626' : '#f5f5f5'} />
+              <XAxis dataKey="date" tick={{ fontSize: 11, fill: isDark ? '#737373' : '#a3a3a3' }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 12]} tick={{ fontSize: 11, fill: isDark ? '#737373' : '#a3a3a3' }} axisLine={false} tickLine={false} tickCount={5} />
               <Tooltip
-                contentStyle={{ borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07)', fontSize: 13 }}
+                contentStyle={{
+                  borderRadius: 12,
+                  border: isDark ? '1px solid #262626' : 'none',
+                  boxShadow: isDark ? '0 4px 6px -1px rgba(0,0,0,0.5)' : '0 4px 6px -1px rgba(0,0,0,0.07)',
+                  fontSize: 13,
+                  backgroundColor: isDark ? '#171717' : '#ffffff',
+                  color: isDark ? '#f5f5f5' : '#171717',
+                }}
                 formatter={(v: number) => [`${v} hrs`, 'Sleep']}
               />
               <ReferenceLine y={SLEEP_GOAL} stroke="#14b8a6" strokeDasharray="4 4" label={{ value: 'Goal', fill: '#14b8a6', fontSize: 11, position: 'right' }} />

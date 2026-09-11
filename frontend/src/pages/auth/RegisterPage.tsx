@@ -50,8 +50,8 @@ export function RegisterPage() {
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-neutral-900">Create your account</h2>
-        <p className="text-neutral-500 mt-1 text-sm">Start your personalized fitness journey today.</p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Create your account</h2>
+        <p className="text-neutral-500 dark:text-neutral-400 mt-1 text-sm">Start your personalized fitness journey today.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4" noValidate>
@@ -97,7 +97,7 @@ export function RegisterPage() {
               aria-invalid={!!errors.password}
             />
             <button type="button" onClick={() => setShowPw(!showPw)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
               aria-label={showPw ? 'Hide password' : 'Show password'}
             >
               {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -126,9 +126,9 @@ export function RegisterPage() {
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-neutral-500">
+      <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         Already have an account?{' '}
-        <Link to="/login" className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+        <Link to="/login" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
           Sign in
         </Link>
       </p>

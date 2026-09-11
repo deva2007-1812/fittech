@@ -85,7 +85,7 @@ export function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center p-6">
       <div className="w-full max-w-lg">
         {/* Header */}
         <div className="text-center mb-10">
@@ -94,10 +94,10 @@ export function OnboardingPage() {
               <Zap size={20} className="text-white" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold text-neutral-900">
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
             Welcome{user?.name ? `, ${user.name.split(' ')[0]}` : ''}! 👋
           </h1>
-          <p className="text-neutral-500 mt-2 text-sm">Let's personalize your experience. This takes about 2 minutes.</p>
+          <p className="text-neutral-500 dark:text-neutral-400 mt-2 text-sm">Let's personalize your experience. This takes about 2 minutes.</p>
         </div>
 
         {/* Step indicator */}
@@ -107,15 +107,15 @@ export function OnboardingPage() {
               <div className="flex flex-col items-center gap-1">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-200 ${
                   i < step ? 'bg-emerald-600 text-white' :
-                  i === step ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' :
-                  'bg-neutral-200 text-neutral-400'
+                  i === step ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 dark:ring-emerald-950/60' :
+                  'bg-neutral-200 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500'
                 }`}>
                   {i < step ? <Check size={14} /> : i + 1}
                 </div>
-                <span className="text-[10px] text-neutral-500 font-medium hidden sm:block">{label}</span>
+                <span className="text-[10px] text-neutral-500 dark:text-neutral-400 font-medium hidden sm:block">{label}</span>
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`flex-1 h-0.5 rounded-full transition-all duration-300 ${i < step ? 'bg-emerald-500' : 'bg-neutral-200'}`} style={{ maxWidth: '60px' }} />
+                <div className={`flex-1 h-0.5 rounded-full transition-all duration-300 ${i < step ? 'bg-emerald-500' : 'bg-neutral-200 dark:bg-neutral-800'}`} style={{ maxWidth: '60px' }} />
               )}
             </React.Fragment>
           ))}
@@ -126,8 +126,8 @@ export function OnboardingPage() {
           {step === 0 && (
             <div className="space-y-5">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900 mb-1">Personal Information</h2>
-                <p className="text-sm text-neutral-500">Help us calculate your personalized targets.</p>
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Personal Information</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">Help us calculate your personalized targets.</p>
               </div>
               <div className="input-group">
                 <label htmlFor="age" className="label">Age <span className="text-neutral-400 font-normal">(years)</span></label>
@@ -158,8 +158,8 @@ export function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900 mb-1">Activity Level</h2>
-                <p className="text-sm text-neutral-500">How active are you on a typical week?</p>
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Activity Level</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">How active are you on a typical week?</p>
               </div>
               {errors.activityLevel && <p className="text-xs text-red-500">{errors.activityLevel}</p>}
               <div className="space-y-2">
@@ -170,12 +170,12 @@ export function OnboardingPage() {
                     onClick={() => { setForm(f => ({ ...f, activityLevel: level })); setErrors(ev => ({ ...ev, activityLevel: '' })); }}
                     className={`w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-all duration-150 ${
                       form.activityLevel === level
-                        ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
-                        : 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50 text-neutral-700'
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-800 dark:text-emerald-200'
+                        : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 text-neutral-700 dark:text-neutral-300'
                     }`}
                   >
                     <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      form.activityLevel === level ? 'border-emerald-500' : 'border-neutral-300'
+                      form.activityLevel === level ? 'border-emerald-500' : 'border-neutral-300 dark:border-neutral-600'
                     }`}>
                       {form.activityLevel === level && <div className="w-2 h-2 rounded-full bg-emerald-500" />}
                     </div>
@@ -189,8 +189,8 @@ export function OnboardingPage() {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <h2 className="text-xl font-bold text-neutral-900 mb-1">Fitness Goal</h2>
-                <p className="text-sm text-neutral-500">What's your primary focus right now?</p>
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-1">Fitness Goal</h2>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">What's your primary focus right now?</p>
               </div>
               {errors.fitnessGoal && <p className="text-xs text-red-500">{errors.fitnessGoal}</p>}
               <div className="space-y-3">
@@ -201,16 +201,16 @@ export function OnboardingPage() {
                     onClick={() => { setForm(f => ({ ...f, fitnessGoal: value })); setErrors(ev => ({ ...ev, fitnessGoal: '' })); }}
                     className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all duration-150 ${
                       form.fitnessGoal === value
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
+                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30'
+                        : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
                     }`}
                   >
                     <span className="text-2xl">{emoji}</span>
                     <div>
-                      <p className={`text-sm font-semibold ${form.fitnessGoal === value ? 'text-emerald-800' : 'text-neutral-800'}`}>
+                      <p className={`text-sm font-semibold ${form.fitnessGoal === value ? 'text-emerald-800 dark:text-emerald-300' : 'text-neutral-800 dark:text-neutral-200'}`}>
                         {GOAL_LABELS[value]}
                       </p>
-                      <p className="text-xs text-neutral-500 mt-0.5">{desc}</p>
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{desc}</p>
                     </div>
                     {form.fitnessGoal === value && (
                       <div className="ml-auto w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">

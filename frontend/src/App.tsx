@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { ProtectedRoute, PublicRoute, AdminRoute } from './routes/ProtectedRoute';
 import { AuthLayout } from './layouts/AuthLayout';
 import { AppLayout } from './layouts/AppLayout';
@@ -29,27 +30,37 @@ const PageLoader = () => (
   </div>
 );
 
+function AppToaster() {
+  const { isDark } = useTheme();
+  return (
+    <Toaster
+      position="top-right"
+      toastOptions={{
+        style: {
+          borderRadius: '12px',
+          background: isDark ? '#171717' : '#fff',
+          color: isDark ? '#f5f5f5' : '#171717',
+          fontSize: '13px',
+          fontFamily: 'Inter, sans-serif',
+          boxShadow: isDark
+            ? '0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5)'
+            : '0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07)',
+          border: isDark ? '1px solid #262626' : '1px solid #f5f5f5',
+          maxWidth: '380px',
+        },
+        success: { iconTheme: { primary: '#059669', secondary: '#fff' } },
+        error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
+      }}
+    />
+  );
+}
+
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            style: {
-              borderRadius: '12px',
-              background: '#fff',
-              color: '#171717',
-              fontSize: '13px',
-              fontFamily: 'Inter, sans-serif',
-              boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07)',
-              border: '1px solid #f5f5f5',
-              maxWidth: '380px',
-            },
-            success: { iconTheme: { primary: '#059669', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#ef4444', secondary: '#fff' } },
-          }}
-        />
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <AppToaster />
 
         <Suspense fallback={<PageLoader />}>
           <Routes>
@@ -95,6 +106,7 @@ function App() {
         </Suspense>
       </BrowserRouter>
     </AuthProvider>
+  </ThemeProvider>
   );
 }
 

@@ -10,6 +10,7 @@ import { progressService } from '../../services/progressService';
 import { getApiErrorMessage } from '../../services/api';
 import { formatShortDate, cn, getLocalDateString } from '../../utils/helpers';
 import type { DateRange, ProgressData } from '../../types';
+import { useTheme } from '../../context/ThemeContext';
 import toast from 'react-hot-toast';
 
 function ChartCard({
@@ -44,6 +45,7 @@ const RANGES: { value: DateRange; label: string }[] = [
 ];
 
 export function ProgressPage() {
+  const { isDark } = useTheme();
   const [range, setRange] = useState<DateRange>('7d');
   const [data, setData] = useState<ProgressData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -114,9 +116,16 @@ export function ProgressPage() {
     min: Number(w.duration || 0),
   }));
 
-  const tip = { fontSize: 12, fill: '#a3a3a3' };
-  const gridStyle = { stroke: '#f5f5f5' };
-  const tooltipStyle = { borderRadius: 12, border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.07)', fontSize: 12 };
+  const tip = { fontSize: 12, fill: isDark ? '#737373' : '#a3a3a3' };
+  const gridStyle = { stroke: isDark ? '#262626' : '#f5f5f5' };
+  const tooltipStyle = {
+    borderRadius: 12,
+    border: isDark ? '1px solid #262626' : 'none',
+    boxShadow: isDark ? '0 4px 6px -1px rgba(0,0,0,0.5)' : '0 4px 6px -1px rgba(0,0,0,0.07)',
+    fontSize: 12,
+    backgroundColor: isDark ? '#171717' : '#ffffff',
+    color: isDark ? '#f5f5f5' : '#171717',
+  };
 
   const avgCalories = calData.length > 0
     ? `${Math.round(calData.reduce((s, c) => s + c.kcal, 0) / calData.length)} kcal`
@@ -140,7 +149,7 @@ export function ProgressPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="page-title">Progress</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Track your fitness metrics over time from database</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">Track your fitness metrics over time from database</p>
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -150,14 +159,16 @@ export function ProgressPage() {
             <Plus size={14} /> Log Weight
           </button>
           {/* Range selector */}
-          <div className="flex gap-1 bg-neutral-100 p-1 rounded-xl">
+          <div className="flex gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
             {RANGES.map(({ value, label }) => (
               <button
                 key={value}
                 onClick={() => setRange(value)}
                 className={cn(
                   'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all',
-                  range === value ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                  range === value
+                    ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
                 )}
               >
                 {label}
@@ -176,10 +187,10 @@ export function ProgressPage() {
           {/* Summary pills */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Avg. Calories', value: avgCalories, color: 'text-amber-700 bg-amber-50' },
-              { label: 'Avg. Water', value: avgWater, color: 'text-blue-700 bg-blue-50' },
-              { label: 'Avg. Sleep', value: avgSleep, color: 'text-teal-700 bg-teal-50' },
-              { label: 'Active Days', value: activeDays, color: 'text-purple-700 bg-purple-50' },
+              { label: 'Avg. Calories', value: avgCalories, color: 'text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40' },
+              { label: 'Avg. Water', value: avgWater, color: 'text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40' },
+              { label: 'Avg. Sleep', value: avgSleep, color: 'text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40' },
+              { label: 'Active Days', value: activeDays, color: 'text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/40' },
             ].map(({ label, value, color }) => (
               <div key={label} className={`${color} rounded-2xl p-4 text-center`}>
                 <p className="text-lg font-bold">{value}</p>

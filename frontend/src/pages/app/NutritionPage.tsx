@@ -207,13 +207,13 @@ function AddFoodModal({
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => { setIsVoice(false); setConfirmedFoods(null); }}
-          className={cn('flex-1 py-2 rounded-xl text-sm font-semibold transition-all', !isVoice ? 'bg-emerald-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200')}
+          className={cn('flex-1 py-2 rounded-xl text-sm font-semibold transition-all', !isVoice ? 'bg-emerald-600 text-white' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700')}
         >
           <Search size={14} className="inline mr-1.5" /> Manual & Search
         </button>
         <button
           onClick={() => { setIsVoice(true); setConfirmedFoods(null); }}
-          className={cn('flex-1 py-2 rounded-xl text-sm font-semibold transition-all', isVoice ? 'bg-emerald-600 text-white' : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200')}
+          className={cn('flex-1 py-2 rounded-xl text-sm font-semibold transition-all', isVoice ? 'bg-emerald-600 text-white' : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700')}
         >
           <Mic size={14} className="inline mr-1.5" /> Voice AI
         </button>
@@ -221,21 +221,21 @@ function AddFoodModal({
 
       {confirmedFoods ? (
         <div className="space-y-4 animate-fade-in">
-          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
-            <CheckCircle2 size={32} className="text-emerald-600 mx-auto mb-1" />
-            <h4 className="text-sm font-bold text-emerald-900">Food Logged to Database!</h4>
-            <p className="text-xs text-emerald-700 mt-0.5">Backend calculated the nutrition breakdown:</p>
+          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-center">
+            <CheckCircle2 size={32} className="text-emerald-600 dark:text-emerald-400 mx-auto mb-1" />
+            <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-200">Food Logged to Database!</h4>
+            <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">Backend calculated the nutrition breakdown:</p>
           </div>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {confirmedFoods.map((item, idx) => (
-              <div key={idx} className="p-3 bg-neutral-50 rounded-lg flex items-center justify-between text-xs">
+              <div key={idx} className="p-3 bg-neutral-50 dark:bg-neutral-800/60 rounded-lg flex items-center justify-between text-xs">
                 <div>
-                  <p className="font-semibold text-neutral-800">{item.foodName} ({item.quantity})</p>
-                  <p className="text-neutral-500 capitalize">{item.mealType}</p>
+                  <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.foodName} ({item.quantity})</p>
+                  <p className="text-neutral-500 dark:text-neutral-400 capitalize">{item.mealType}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-neutral-900">{Math.round(item.calories)} kcal</p>
-                  <p className="text-neutral-500">{Math.round(item.protein)}g P · {Math.round(item.carbs)}g C · {Math.round(item.fat)}g F</p>
+                  <p className="font-bold text-neutral-900 dark:text-neutral-100">{Math.round(item.calories)} kcal</p>
+                  <p className="text-neutral-500 dark:text-neutral-400">{Math.round(item.protein)}g P · {Math.round(item.carbs)}g C · {Math.round(item.fat)}g F</p>
                 </div>
               </div>
             ))}
@@ -324,7 +324,7 @@ function AddFoodModal({
 
             {/* Food Search Autocomplete Dropdown */}
             {searchResults.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-neutral-200 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-lg max-h-48 overflow-y-auto">
                 {searchResults.map(item => (
                   <button
                     key={item.id}
@@ -339,15 +339,15 @@ function AddFoodModal({
                       }));
                       setSearchResults([]);
                     }}
-                    className="w-full text-left px-3 py-2 hover:bg-neutral-50 flex items-center justify-between text-xs border-b border-neutral-100 last:border-0"
+                    className="w-full text-left px-3 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-800 flex items-center justify-between text-xs border-b border-neutral-100 dark:border-neutral-800 last:border-0"
                   >
                     <div>
-                      <p className="font-semibold text-neutral-800">{item.name}</p>
-                      <p className="text-neutral-400">{item.servingSize} {item.servingUnit}</p>
+                      <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.name}</p>
+                      <p className="text-neutral-400 dark:text-neutral-500">{item.servingSize} {item.servingUnit}</p>
                     </div>
                     <div className="text-right">
-                      <span className="font-bold text-emerald-600">{Math.round(item.calories)} kcal</span>
-                      <p className="text-[10px] text-neutral-400">{Math.round(item.protein)}g P · {Math.round(item.carbohydrates)}g C</p>
+                      <span className="font-bold text-emerald-600 dark:text-emerald-400">{Math.round(item.calories)} kcal</span>
+                      <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{Math.round(item.protein)}g P · {Math.round(item.carbohydrates)}g C</p>
                     </div>
                   </button>
                 ))}
@@ -475,9 +475,10 @@ export function NutritionPage() {
         {/* Macro pills */}
         <div className="flex gap-3 pt-1">
           {[
-            { label: 'Protein', value: `${Math.round(totals.protein)}g`, color: 'bg-emerald-50 text-emerald-700' },
-            { label: 'Carbs', value: `${Math.round(totals.carbs)}g`, color: 'bg-amber-50 text-amber-700' },
-            { label: 'Fat', value: `${Math.round(totals.fat)}g`, color: 'bg-purple-50 text-purple-700' },
+            { label: 'Calories', value: `${Math.round(totals.calories)} kcal`, color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300' },
+            { label: 'Protein', value: `${Math.round(totals.protein)}g`, color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' },
+            { label: 'Carbs', value: `${Math.round(totals.carbs)}g`, color: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300' },
+            { label: 'Fat', value: `${Math.round(totals.fat)}g`, color: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300' },
           ].map(({ label, value, color }) => (
             <div key={label} className={`flex-1 text-center py-2 rounded-xl ${color}`}>
               <p className="text-sm font-bold">{value}</p>
@@ -488,14 +489,14 @@ export function NutritionPage() {
       </div>
 
       {/* Meal tabs */}
-      <div className="flex gap-1 bg-neutral-100 p-1 rounded-xl">
+      <div className="flex gap-1 bg-neutral-100 dark:bg-neutral-800 p-1 rounded-xl">
         {MEAL_TYPES.map(({ value, label, emoji }) => (
           <button
             key={value}
             onClick={() => setActiveTab(value)}
             className={cn(
               'flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-150',
-              activeTab === value ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+              activeTab === value ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-sm' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
             )}
           >
             <span className="hidden sm:inline">{emoji} </span>{label}
@@ -506,7 +507,7 @@ export function NutritionPage() {
       {/* Food entries */}
       <div className="card p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-neutral-700 capitalize">
+          <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300 capitalize">
             {MEAL_TYPES.find(m => m.value === activeTab)?.emoji} {MEAL_TYPES.find(m => m.value === activeTab)?.label}
           </h3>
           <button onClick={() => setShowModal(true)} className="btn-ghost text-xs py-1 px-2.5">

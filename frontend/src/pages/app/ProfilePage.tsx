@@ -153,9 +153,9 @@ export function ProfilePage() {
             { label: 'Weight', value: user?.weight ? `${user.weight} kg` : '—' },
             { label: 'Age', value: user?.age ? `${user.age} yrs` : '—' },
           ].map(({ label, value }) => (
-            <div key={label} className="bg-neutral-50 rounded-xl p-4">
-              <p className="text-lg font-bold text-neutral-900">{value}</p>
-              <p className="text-xs text-neutral-500 font-medium mt-1">{label}</p>
+            <div key={label} className="bg-neutral-50 dark:bg-neutral-800/60 rounded-xl p-4">
+              <p className="text-lg font-bold text-neutral-900 dark:text-neutral-100">{value}</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium mt-1">{label}</p>
             </div>
           ))}
         </div>

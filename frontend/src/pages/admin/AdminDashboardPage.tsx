@@ -263,13 +263,13 @@ export function AdminDashboardPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-neutral-200 gap-2 sm:gap-4 overflow-x-auto">
+      <div className="flex border-b border-neutral-200 dark:border-neutral-800 gap-2 sm:gap-4 overflow-x-auto">
         <button
           onClick={() => setActiveTab('overview')}
           className={`pb-3 px-3 sm:px-4 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'overview'
-              ? 'border-purple-600 text-purple-700'
-              : 'border-transparent text-neutral-500 hover:text-neutral-800'
+              ? 'border-purple-600 text-purple-700 dark:text-purple-400'
+              : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
           }`}
         >
           <Activity size={17} />
@@ -280,8 +280,8 @@ export function AdminDashboardPage() {
           onClick={() => setActiveTab('users')}
           className={`pb-3 px-3 sm:px-4 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'users'
-              ? 'border-purple-600 text-purple-700'
-              : 'border-transparent text-neutral-500 hover:text-neutral-800'
+              ? 'border-purple-600 text-purple-700 dark:text-purple-400'
+              : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
           }`}
         >
           <Users size={17} />
@@ -292,8 +292,8 @@ export function AdminDashboardPage() {
           onClick={() => setActiveTab('foods')}
           className={`pb-3 px-3 sm:px-4 text-sm font-semibold border-b-2 transition-all flex items-center gap-2 whitespace-nowrap ${
             activeTab === 'foods'
-              ? 'border-purple-600 text-purple-700'
-              : 'border-transparent text-neutral-500 hover:text-neutral-800'
+              ? 'border-purple-600 text-purple-700 dark:text-purple-400'
+              : 'border-transparent text-neutral-500 hover:text-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-200'
           }`}
         >
           <Database size={17} />
@@ -305,85 +305,85 @@ export function AdminDashboardPage() {
       {activeTab === 'overview' && stats && (
         <div className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Total Users</span>
-                <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
+                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Total Users</span>
+                <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400">
                   <Users size={18} />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900">{stats.totalUsers}</p>
-              <div className="flex items-center gap-2 mt-2 text-xs text-neutral-500">
-                <span className="font-semibold text-purple-700">{stats.adminUsers} Admin</span>
+              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">{stats.totalUsers}</p>
+              <div className="flex items-center gap-2 mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+                <span className="font-semibold text-purple-700 dark:text-purple-300">{stats.adminUsers} Admin</span>
                 <span>•</span>
                 <span>{stats.standardUsers} Standard</span>
               </div>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Food Logs</span>
-                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Food Logs</span>
+                <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400">
                   <Utensils size={18} />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900">{stats.totalFoodLogs}</p>
-              <p className="text-xs text-neutral-400 mt-2">Recorded user meals</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">{stats.totalFoodLogs}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">Recorded user meals</p>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Workout Logs</span>
-                <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
+                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Workout Logs</span>
+                <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
                   <Dumbbell size={18} />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900">{stats.totalWorkoutLogs}</p>
-              <p className="text-xs text-neutral-400 mt-2">Fitness sessions logged</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">{stats.totalWorkoutLogs}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">Fitness sessions logged</p>
             </div>
 
-            <div className="bg-white p-5 rounded-2xl border border-neutral-200/80 shadow-sm hover:shadow-md transition-shadow">
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Master Foods</span>
-                <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
+                <span className="text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Master Foods</span>
+                <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400">
                   <Database size={18} />
                 </div>
               </div>
-              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900">{stats.totalFoodsInDatabase}</p>
-              <p className="text-xs text-neutral-400 mt-2">Verified catalog items</p>
+              <p className="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-neutral-100">{stats.totalFoodsInDatabase}</p>
+              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-2">Verified catalog items</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white p-6 rounded-2xl border border-neutral-200/80 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+            <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-4">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Droplets size={18} className="text-cyan-500" />
                 Hydration & Sleep Metrics
               </h3>
               <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="p-4 rounded-xl bg-cyan-50/60 border border-cyan-100">
-                  <span className="text-xs font-medium text-cyan-800">Water Log Entries</span>
-                  <p className="text-xl font-bold text-cyan-950 mt-1">{stats.totalWaterLogs}</p>
+                <div className="p-4 rounded-xl bg-cyan-50/60 dark:bg-cyan-950/30 border border-cyan-100 dark:border-cyan-900/50">
+                  <span className="text-xs font-medium text-cyan-800 dark:text-cyan-300">Water Log Entries</span>
+                  <p className="text-xl font-bold text-cyan-950 dark:text-cyan-100 mt-1">{stats.totalWaterLogs}</p>
                 </div>
-                <div className="p-4 rounded-xl bg-indigo-50/60 border border-indigo-100">
-                  <span className="text-xs font-medium text-indigo-800">Sleep Log Entries</span>
-                  <p className="text-xl font-bold text-indigo-950 mt-1">{stats.totalSleepLogs}</p>
+                <div className="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50">
+                  <span className="text-xs font-medium text-indigo-800 dark:text-indigo-300">Sleep Log Entries</span>
+                  <p className="text-xl font-bold text-indigo-950 dark:text-indigo-100 mt-1">{stats.totalSleepLogs}</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 rounded-2xl border border-neutral-200/80 shadow-sm space-y-4">
-              <h3 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+            <div className="bg-white dark:bg-neutral-900 p-6 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-4">
+              <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
                 <Sparkles size={18} className="text-amber-500" />
                 Administrative Controls
               </h3>
-              <p className="text-sm text-neutral-600">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
                 You have full superuser rights to elevate any user account to Administrator or manage the master food database.
               </p>
               <div className="flex gap-2 pt-1">
                 <button
                   onClick={() => setActiveTab('users')}
-                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors"
+                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 hover:bg-purple-100 dark:hover:bg-purple-900/50 transition-colors"
                 >
                   Manage Users & Roles →
                 </button>
@@ -392,7 +392,7 @@ export function AdminDashboardPage() {
                     setActiveTab('foods');
                     handleOpenFoodModal();
                   }}
-                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors"
+                  className="px-3.5 py-2 text-xs font-semibold rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
                 >
                   + Add Master Food Item
                 </button>
@@ -404,9 +404,9 @@ export function AdminDashboardPage() {
 
       {/* TAB 2: USER MANAGEMENT */}
       {activeTab === 'users' && (
-        <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm overflow-hidden">
           {/* Controls */}
-          <div className="p-4 sm:p-5 border-b border-neutral-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          <div className="p-4 sm:p-5 border-b border-neutral-100 dark:border-neutral-800 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div className="relative flex-1 max-w-md">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
               <input
@@ -414,16 +414,16 @@ export function AdminDashboardPage() {
                 value={userSearch}
                 onChange={e => setUserSearch(e.target.value)}
                 placeholder="Search users by name or email..."
-                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
               />
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-neutral-500">Filter:</span>
+              <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Filter:</span>
               <select
                 value={userRoleFilter}
                 onChange={e => setUserRoleFilter(e.target.value as any)}
-                className="px-3 py-2 text-sm rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-700 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                className="px-3 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
               >
                 <option value="ALL">All Roles ({users.length})</option>
                 <option value="ADMIN">Admins Only</option>
@@ -435,7 +435,7 @@ export function AdminDashboardPage() {
           {/* User Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50/80 text-xs font-semibold text-neutral-500 uppercase border-b border-neutral-100">
+              <thead className="bg-neutral-50/80 dark:bg-neutral-800/80 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase border-b border-neutral-100 dark:border-neutral-800">
                 <tr>
                   <th className="px-5 py-3.5">User</th>
                   <th className="px-5 py-3.5">Role</th>
@@ -444,7 +444,7 @@ export function AdminDashboardPage() {
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100">
+              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {filteredUsers.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-5 py-12 text-center text-neutral-400">
@@ -457,17 +457,17 @@ export function AdminDashboardPage() {
                     const isSelf = targetUser.id === currentUser?.id;
 
                     return (
-                      <tr key={targetUser.id} className="hover:bg-neutral-50/60 transition-colors">
+                      <tr key={targetUser.id} className="hover:bg-neutral-50/60 dark:hover:bg-neutral-800/40 transition-colors">
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm">
+                            <div className="w-9 h-9 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 flex items-center justify-center font-bold text-sm">
                               {targetUser.name?.[0]?.toUpperCase() || 'U'}
                             </div>
                             <div>
                               <div className="flex items-center gap-1.5">
-                                <p className="font-semibold text-neutral-900">{targetUser.name}</p>
+                                <p className="font-semibold text-neutral-900 dark:text-neutral-100">{targetUser.name}</p>
                                 {isSelf && (
-                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-neutral-100 text-neutral-600 font-medium">You</span>
+                                  <span className="text-[10px] px-1.5 py-0.2 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 font-medium">You</span>
                                 )}
                               </div>
                               <p className="text-xs text-neutral-400">{targetUser.email}</p>
@@ -479,8 +479,8 @@ export function AdminDashboardPage() {
                           <span
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${
                               isAdmin
-                                ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                                : 'bg-neutral-100 text-neutral-600'
+                                ? 'bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800'
+                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
                             }`}
                           >
                             {isAdmin ? <Shield size={12} /> : <UserCheck size={12} />}
@@ -488,10 +488,10 @@ export function AdminDashboardPage() {
                           </span>
                         </td>
 
-                        <td className="px-5 py-4 text-xs text-neutral-600">
+                        <td className="px-5 py-4 text-xs text-neutral-600 dark:text-neutral-400">
                           {targetUser.profileComplete ? (
                             <div>
-                              <p className="font-medium text-neutral-800">
+                              <p className="font-medium text-neutral-800 dark:text-neutral-200">
                                 {targetUser.age ? `${targetUser.age} yrs` : ''}
                                 {targetUser.weight ? ` • ${targetUser.weight} kg` : ''}
                                 {targetUser.height ? ` • ${targetUser.height} cm` : ''}
@@ -501,7 +501,7 @@ export function AdminDashboardPage() {
                               </p>
                             </div>
                           ) : (
-                            <span className="text-amber-600 italic">Onboarding pending</span>
+                            <span className="text-amber-600 dark:text-amber-400 italic">Onboarding pending</span>
                           )}
                         </td>
 
@@ -516,7 +516,7 @@ export function AdminDashboardPage() {
                             <button
                               onClick={() => handleViewActivity(targetUser.id)}
                               title="Inspect user activity logs"
-                              className="p-1.5 rounded-lg text-neutral-500 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+                              className="p-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
                             >
                               <Eye size={16} />
                             </button>
@@ -527,10 +527,10 @@ export function AdminDashboardPage() {
                               title={isAdmin ? 'Demote to USER' : 'Promote to ADMIN'}
                               className={`px-2 py-1 rounded-lg text-xs font-semibold transition-colors ${
                                 isSelf
-                                  ? 'opacity-40 cursor-not-allowed text-neutral-400 bg-neutral-100'
+                                  ? 'opacity-40 cursor-not-allowed text-neutral-400 bg-neutral-100 dark:bg-neutral-800'
                                   : isAdmin
-                                  ? 'text-amber-700 hover:bg-amber-50 border border-amber-200'
-                                  : 'text-purple-700 hover:bg-purple-50 border border-purple-200'
+                                  ? 'text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 border border-amber-200 dark:border-amber-800'
+                                  : 'text-purple-700 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950/40 border border-purple-200 dark:border-purple-800'
                               }`}
                             >
                               {isAdmin ? 'Make User' : 'Make Admin'}
@@ -540,7 +540,7 @@ export function AdminDashboardPage() {
                               <button
                                 onClick={() => handleDeleteUser(targetUser)}
                                 title="Delete user account"
-                                className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                               >
                                 <Trash2 size={16} />
                               </button>
@@ -559,8 +559,8 @@ export function AdminDashboardPage() {
 
       {/* TAB 3: FOOD DATABASE */}
       {activeTab === 'foods' && (
-        <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-sm overflow-hidden">
-          <div className="p-4 sm:p-5 border-b border-neutral-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-sm overflow-hidden">
+          <div className="p-4 sm:p-5 border-b border-neutral-100 dark:border-neutral-800 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             <div className="relative flex-1 max-w-md">
               <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
               <input
@@ -568,7 +568,7 @@ export function AdminDashboardPage() {
                 value={foodSearch}
                 onChange={e => setFoodSearch(e.target.value)}
                 placeholder="Search food catalog..."
-                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
               />
             </div>
 
@@ -584,7 +584,7 @@ export function AdminDashboardPage() {
           {/* Foods Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-neutral-50/80 text-xs font-semibold text-neutral-500 uppercase border-b border-neutral-100">
+              <thead className="bg-neutral-50/80 dark:bg-neutral-800/80 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase border-b border-neutral-100 dark:border-neutral-800">
                 <tr>
                   <th className="px-5 py-3.5">Food Name</th>
                   <th className="px-5 py-3.5">Serving</th>
@@ -595,7 +595,7 @@ export function AdminDashboardPage() {
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100">
+              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {filteredFoods.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="px-5 py-12 text-center text-neutral-400">
@@ -604,30 +604,30 @@ export function AdminDashboardPage() {
                   </tr>
                 ) : (
                   filteredFoods.map(food => (
-                    <tr key={food.id} className="hover:bg-neutral-50/60 transition-colors">
-                      <td className="px-5 py-3.5 font-semibold text-neutral-900">{food.name}</td>
-                      <td className="px-5 py-3.5 text-xs text-neutral-600">
+                    <tr key={food.id} className="hover:bg-neutral-50/60 dark:hover:bg-neutral-800/40 transition-colors">
+                      <td className="px-5 py-3.5 font-semibold text-neutral-900 dark:text-neutral-100">{food.name}</td>
+                      <td className="px-5 py-3.5 text-xs text-neutral-600 dark:text-neutral-400">
                         {food.servingSize} {food.servingUnit}
                       </td>
-                      <td className="px-5 py-3.5 text-xs font-bold text-neutral-800">
+                      <td className="px-5 py-3.5 text-xs font-bold text-neutral-800 dark:text-neutral-200">
                         {food.calories} kcal
                       </td>
-                      <td className="px-5 py-3.5 text-xs text-emerald-600 font-medium">{food.protein}g</td>
-                      <td className="px-5 py-3.5 text-xs text-amber-600 font-medium">{food.carbohydrates}g</td>
-                      <td className="px-5 py-3.5 text-xs text-red-600 font-medium">{food.fat}g</td>
+                      <td className="px-5 py-3.5 text-xs text-emerald-600 dark:text-emerald-400 font-medium">{food.protein}g</td>
+                      <td className="px-5 py-3.5 text-xs text-amber-600 dark:text-amber-400 font-medium">{food.carbohydrates}g</td>
+                      <td className="px-5 py-3.5 text-xs text-red-600 dark:text-red-400 font-medium">{food.fat}g</td>
                       <td className="px-5 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => handleOpenFoodModal(food)}
                             title="Edit food item"
-                            className="p-1.5 rounded-lg text-neutral-500 hover:text-purple-600 hover:bg-purple-50 transition-colors"
+                            className="p-1.5 rounded-lg text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/40 transition-colors"
                           >
                             <Edit3 size={15} />
                           </button>
                           <button
                             onClick={() => handleDeleteFood(food)}
                             title="Delete food item"
-                            className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            className="p-1.5 rounded-lg text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                           >
                             <Trash2 size={15} />
                           </button>
@@ -644,15 +644,15 @@ export function AdminDashboardPage() {
 
       {/* MODAL 1: ADD / EDIT FOOD */}
       {isFoodModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
-              <h3 className="text-lg font-bold text-neutral-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-neutral-800">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
                 {editingFood ? 'Edit Master Food Item' : 'Add New Master Food'}
               </h3>
               <button
                 onClick={() => setIsFoodModalOpen(false)}
-                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -660,94 +660,94 @@ export function AdminDashboardPage() {
 
             <form onSubmit={handleSaveFood} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-neutral-700 mb-1">Food Name *</label>
+                <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Food Name *</label>
                 <input
                   type="text"
                   required
                   value={foodForm.name}
                   onChange={e => setFoodForm({ ...foodForm, name: e.target.value })}
                   placeholder="e.g., Grilled Chicken Breast"
-                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                  className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Serving Size *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Serving Size *</label>
                   <input
                     type="number"
                     step="any"
                     required
                     value={foodForm.servingSize}
                     onChange={e => setFoodForm({ ...foodForm, servingSize: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Serving Unit *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Serving Unit *</label>
                   <input
                     type="text"
                     required
                     value={foodForm.servingUnit}
                     onChange={e => setFoodForm({ ...foodForm, servingUnit: e.target.value })}
                     placeholder="e.g., g, serving, cup"
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Calories (kcal) *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Calories (kcal) *</label>
                   <input
                     type="number"
                     step="any"
                     required
                     value={foodForm.calories}
                     onChange={e => setFoodForm({ ...foodForm, calories: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Protein (g) *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Protein (g) *</label>
                   <input
                     type="number"
                     step="any"
                     required
                     value={foodForm.protein}
                     onChange={e => setFoodForm({ ...foodForm, protein: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Carbs (g) *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Carbs (g) *</label>
                   <input
                     type="number"
                     step="any"
                     required
                     value={foodForm.carbohydrates}
                     onChange={e => setFoodForm({ ...foodForm, carbohydrates: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-700 mb-1">Fat (g) *</label>
+                  <label className="block text-xs font-semibold text-neutral-700 dark:text-neutral-300 mb-1">Fat (g) *</label>
                   <input
                     type="number"
                     step="any"
                     required
                     value={foodForm.fat}
                     onChange={e => setFoodForm({ ...foodForm, fat: parseFloat(e.target.value) || 0 })}
-                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
+                    className="w-full px-3.5 py-2 text-sm rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-neutral-100 dark:border-neutral-800">
                 <button
                   type="button"
                   onClick={() => setIsFoodModalOpen(false)}
-                  className="px-4 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-100 rounded-xl transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
@@ -765,18 +765,18 @@ export function AdminDashboardPage() {
 
       {/* MODAL 2: USER ACTIVITY INSPECTOR */}
       {selectedUserActivity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
-            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 flex-shrink-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-neutral-100 dark:border-neutral-800 flex-shrink-0">
               <div>
-                <h3 className="text-lg font-bold text-neutral-900">Activity Log Inspector</h3>
-                <p className="text-xs text-neutral-500">
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Activity Log Inspector</h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
                   {selectedUserActivity.userName} ({selectedUserActivity.userEmail})
                 </p>
               </div>
               <button
                 onClick={() => setSelectedUserActivity(null)}
-                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors"
+                className="p-1 rounded-lg text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
               >
                 <X size={18} />
               </button>
@@ -785,8 +785,8 @@ export function AdminDashboardPage() {
             <div className="overflow-y-auto space-y-5 pr-1 flex-1">
               {/* Food Logs */}
               <div>
-                <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Utensils size={14} className="text-emerald-600" />
+                <h4 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Utensils size={14} className="text-emerald-600 dark:text-emerald-400" />
                   Recent Meals ({selectedUserActivity.recentFoodLogs?.length || 0})
                 </h4>
                 {selectedUserActivity.recentFoodLogs?.length === 0 ? (
@@ -794,15 +794,15 @@ export function AdminDashboardPage() {
                 ) : (
                   <div className="space-y-1.5">
                     {selectedUserActivity.recentFoodLogs.map(item => (
-                      <div key={item.id} className="p-2.5 rounded-xl bg-neutral-50 flex items-center justify-between text-xs">
+                      <div key={item.id} className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/70 border border-neutral-100 dark:border-neutral-700/50 flex items-center justify-between text-xs">
                         <div>
-                          <p className="font-semibold text-neutral-800">{item.foodName}</p>
+                          <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.foodName}</p>
                           <p className="text-[11px] text-neutral-400">
                             {item.quantity} {item.unit} • {item.mealType} • {item.date}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-emerald-600">{item.calories} kcal</p>
+                          <p className="font-bold text-emerald-600 dark:text-emerald-400">{item.calories} kcal</p>
                           <p className="text-[10px] text-neutral-400">P:{item.protein}g C:{item.carbs}g F:{item.fat}g</p>
                         </div>
                       </div>
@@ -813,8 +813,8 @@ export function AdminDashboardPage() {
 
               {/* Workout Logs */}
               <div>
-                <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Dumbbell size={14} className="text-blue-600" />
+                <h4 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <Dumbbell size={14} className="text-blue-600 dark:text-blue-400" />
                   Recent Workouts ({selectedUserActivity.recentWorkoutLogs?.length || 0})
                 </h4>
                 {selectedUserActivity.recentWorkoutLogs?.length === 0 ? (
@@ -822,15 +822,15 @@ export function AdminDashboardPage() {
                 ) : (
                   <div className="space-y-1.5">
                     {selectedUserActivity.recentWorkoutLogs.map(w => (
-                      <div key={w.id} className="p-2.5 rounded-xl bg-neutral-50 flex items-center justify-between text-xs">
+                      <div key={w.id} className="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/70 border border-neutral-100 dark:border-neutral-700/50 flex items-center justify-between text-xs">
                         <div>
-                          <p className="font-semibold text-neutral-800">{w.exercise}</p>
+                          <p className="font-semibold text-neutral-800 dark:text-neutral-200">{w.exercise}</p>
                           <p className="text-[11px] text-neutral-400">
                             {w.duration} mins {w.sets ? `• ${w.sets} sets` : ''} • {w.date}
                           </p>
                         </div>
                         {w.caloriesBurned && (
-                          <span className="font-semibold text-blue-600">{w.caloriesBurned} kcal</span>
+                          <span className="font-semibold text-blue-600 dark:text-blue-400">{w.caloriesBurned} kcal</span>
                         )}
                       </div>
                     ))}
@@ -841,8 +841,8 @@ export function AdminDashboardPage() {
               {/* Water & Sleep */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Droplets size={14} className="text-cyan-600" />
+                  <h4 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Droplets size={14} className="text-cyan-600 dark:text-cyan-400" />
                     Water ({selectedUserActivity.recentWaterLogs?.length || 0})
                   </h4>
                   {selectedUserActivity.recentWaterLogs?.length === 0 ? (
@@ -850,9 +850,9 @@ export function AdminDashboardPage() {
                   ) : (
                     <div className="space-y-1">
                       {selectedUserActivity.recentWaterLogs.map(w => (
-                        <div key={w.id} className="p-2 rounded-lg bg-cyan-50/50 flex justify-between text-xs">
-                          <span>{w.date}</span>
-                          <span className="font-bold text-cyan-800">{w.amount} ml</span>
+                        <div key={w.id} className="p-2 rounded-lg bg-cyan-50/50 dark:bg-cyan-950/30 border border-cyan-100/50 dark:border-cyan-900/30 flex justify-between text-xs">
+                          <span className="text-neutral-600 dark:text-neutral-400">{w.date}</span>
+                          <span className="font-bold text-cyan-800 dark:text-cyan-300">{w.amount} ml</span>
                         </div>
                       ))}
                     </div>
@@ -860,8 +860,8 @@ export function AdminDashboardPage() {
                 </div>
 
                 <div>
-                  <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Moon size={14} className="text-indigo-600" />
+                  <h4 className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    <Moon size={14} className="text-indigo-600 dark:text-indigo-400" />
                     Sleep ({selectedUserActivity.recentSleepLogs?.length || 0})
                   </h4>
                   {selectedUserActivity.recentSleepLogs?.length === 0 ? (
@@ -869,9 +869,9 @@ export function AdminDashboardPage() {
                   ) : (
                     <div className="space-y-1">
                       {selectedUserActivity.recentSleepLogs.map(s => (
-                        <div key={s.id} className="p-2 rounded-lg bg-indigo-50/50 flex justify-between text-xs">
-                          <span>{s.date}</span>
-                          <span className="font-bold text-indigo-800">{s.duration} hrs</span>
+                        <div key={s.id} className="p-2 rounded-lg bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/30 flex justify-between text-xs">
+                          <span className="text-neutral-600 dark:text-neutral-400">{s.date}</span>
+                          <span className="font-bold text-indigo-800 dark:text-indigo-300">{s.duration} hrs</span>
                         </div>
                       ))}
                     </div>
@@ -880,10 +880,10 @@ export function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-neutral-100 flex justify-end flex-shrink-0">
+            <div className="pt-3 border-t border-neutral-100 dark:border-neutral-800 flex justify-end flex-shrink-0">
               <button
                 onClick={() => setSelectedUserActivity(null)}
-                className="px-4 py-2 text-sm font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-xl transition-colors"
+                className="px-4 py-2 text-sm font-semibold bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xl transition-colors"
               >
                 Close
               </button>

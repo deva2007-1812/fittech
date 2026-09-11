@@ -98,7 +98,7 @@ export function WaterPage() {
       <div className="card p-8 flex flex-col items-center gap-6">
         {/* Bottle visualization */}
         <div className="relative">
-          <div className="w-32 h-48 rounded-b-3xl rounded-t-xl border-4 border-blue-200 relative overflow-hidden bg-blue-50">
+          <div className="w-32 h-48 rounded-b-3xl rounded-t-xl border-4 border-blue-200 dark:border-blue-900/60 relative overflow-hidden bg-blue-50 dark:bg-blue-950/40">
             {/* Water fill */}
             <div
               className="absolute bottom-0 left-0 right-0 bg-blue-400 transition-all duration-700 ease-out"
@@ -113,7 +113,7 @@ export function WaterPage() {
             </div>
             {/* Percentage text */}
             <div className="absolute inset-0 flex items-center justify-center z-10">
-              <span className={cn('text-2xl font-bold', pct > 50 ? 'text-white' : 'text-blue-600')}>{pct}%</span>
+              <span className={cn('text-2xl font-bold', pct > 50 ? 'text-white' : 'text-blue-600 dark:text-blue-400')}>{pct}%</span>
             </div>
           </div>
           {/* Droplet icon at top */}
@@ -124,12 +124,12 @@ export function WaterPage() {
 
         {/* Stats */}
         <div className="text-center space-y-1">
-          <p className="text-3xl font-bold text-neutral-900">{formatWater(totalAmount)}</p>
-          <p className="text-sm text-neutral-500">of {formatWater(dailyTarget)} daily target</p>
+          <p className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{formatWater(totalAmount)}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">of {formatWater(dailyTarget)} daily target</p>
           {remaining > 0 ? (
-            <p className="text-sm text-blue-600 font-medium">{formatWater(remaining)} more to go</p>
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">{formatWater(remaining)} more to go</p>
           ) : (
-            <p className="text-sm text-emerald-600 font-semibold">🎉 Daily goal reached!</p>
+            <p className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">🎉 Daily goal reached!</p>
           )}
         </div>
       </div>
@@ -143,7 +143,7 @@ export function WaterPage() {
               key={amount}
               onClick={() => addWater(amount)}
               disabled={isAdding}
-              className="flex flex-col items-center gap-1.5 py-4 rounded-xl border border-blue-100 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 text-blue-700 transition-all duration-150 disabled:opacity-60"
+              className="flex flex-col items-center gap-1.5 py-4 rounded-xl border border-blue-100 dark:border-blue-900/40 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/50 active:bg-blue-200 dark:active:bg-blue-900/70 text-blue-700 dark:text-blue-300 transition-all duration-150 disabled:opacity-60"
             >
               <Droplets size={18} />
               <span className="text-xs font-semibold">+{formatWater(amount)}</span>

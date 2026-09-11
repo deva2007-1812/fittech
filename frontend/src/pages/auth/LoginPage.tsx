@@ -48,8 +48,8 @@ export function LoginPage() {
   return (
     <div className="animate-fade-in">
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-neutral-900">Welcome back</h2>
-        <p className="text-neutral-500 mt-1 text-sm">Sign in to continue your fitness journey.</p>
+        <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Welcome back</h2>
+        <p className="text-neutral-500 dark:text-neutral-400 mt-1 text-sm">Sign in to continue your fitness journey.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
@@ -92,7 +92,7 @@ export function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPw(!showPw)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
               aria-label={showPw ? 'Hide password' : 'Show password'}
             >
               {showPw ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -107,9 +107,9 @@ export function LoginPage() {
 
       </form>
 
-      <p className="mt-6 text-center text-sm text-neutral-500">
+      <p className="mt-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
         Don't have an account?{' '}
-        <Link to="/register" className="text-emerald-600 font-semibold hover:text-emerald-700 transition-colors">
+        <Link to="/register" className="text-emerald-600 dark:text-emerald-400 font-semibold hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
           Create one
         </Link>
       </p>

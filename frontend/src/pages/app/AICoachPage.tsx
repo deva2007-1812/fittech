@@ -15,7 +15,7 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () =
       {/* Avatar */}
       <div className={cn(
         'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold',
-        isUser ? 'bg-emerald-600 text-white' : 'bg-neutral-100 text-emerald-600'
+        isUser ? 'bg-emerald-600 text-white' : 'bg-neutral-100 dark:bg-neutral-800 text-emerald-600 dark:text-emerald-400'
       )}>
         {isUser ? 'U' : <Bot size={16} />}
       </div>
@@ -25,7 +25,7 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () =
         'max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed',
         isUser
           ? 'bg-emerald-600 text-white rounded-tr-sm'
-          : 'bg-white border border-neutral-100 text-neutral-800 rounded-tl-sm shadow-card'
+          : 'bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 text-neutral-800 dark:text-neutral-100 rounded-tl-sm shadow-card'
       )}>
         {message.isLoading ? (
           <div className="flex items-center gap-2 py-1">
@@ -221,23 +221,23 @@ export function AICoachPage() {
   return (
     <div className="flex flex-col h-full max-h-screen">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 bg-white flex-shrink-0">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-            <Bot size={20} className="text-emerald-600" />
+          <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 flex items-center justify-center">
+            <Bot size={20} className="text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
-            <h1 className="font-bold text-neutral-900">AI Coach</h1>
+            <h1 className="font-bold text-neutral-900 dark:text-neutral-100">AI Coach</h1>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <p className="text-xs text-neutral-500">Context-Aware · Powered by FitMind AI</p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">Context-Aware · Powered by FitMind AI</p>
             </div>
           </div>
         </div>
         {messages.length > 1 && (
           <button
             onClick={clearChat}
-            className="text-xs text-neutral-400 hover:text-red-500 flex items-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-100 hover:border-red-100 hover:bg-red-50 transition-colors"
+            className="text-xs text-neutral-400 hover:text-red-500 flex items-center gap-1 px-3 py-1.5 rounded-lg border border-neutral-100 dark:border-neutral-800 hover:border-red-100 dark:hover:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
             title="Clear conversation"
           >
             <Trash2 size={13} /> Clear
@@ -264,13 +264,13 @@ export function AICoachPage() {
       {/* Suggestions */}
       {messages.length <= 1 && (
         <div className="px-4 sm:px-6 pb-4">
-          <p className="text-xs text-neutral-400 mb-2.5 font-medium">Try asking…</p>
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 mb-2.5 font-medium">Try asking…</p>
           <div className="flex flex-wrap gap-2">
             {suggestions.map(s => (
               <button
                 key={s}
                 onClick={() => sendMessage(s)}
-                className="px-3 py-1.5 bg-white border border-neutral-200 rounded-full text-xs text-neutral-600 hover:border-emerald-300 hover:text-emerald-700 hover:bg-emerald-50 transition-all duration-150"
+                className="px-3 py-1.5 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-full text-xs text-neutral-600 dark:text-neutral-300 hover:border-emerald-300 dark:hover:border-emerald-700 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-all duration-150"
               >
                 {s}
               </button>
@@ -280,7 +280,7 @@ export function AICoachPage() {
       )}
 
       {/* Input */}
-      <div className="border-t border-neutral-100 bg-white px-4 sm:px-6 py-4 flex-shrink-0">
+      <div className="border-t border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 sm:px-6 py-4 flex-shrink-0">
         <form onSubmit={handleSubmit} className="flex items-center gap-3">
           <button
             type="button"
@@ -289,7 +289,7 @@ export function AICoachPage() {
               'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 flex-shrink-0',
               isListening
                 ? 'bg-red-500 text-white animate-pulse-slow'
-                : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
             )}
             aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
           >

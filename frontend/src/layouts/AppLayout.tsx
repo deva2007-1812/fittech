@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 
 export function AppLayout() {
   return (
-    <div className="flex h-screen overflow-hidden bg-neutral-50">
+    <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
       {/* Desktop Sidebar */}
       <Sidebar />
 

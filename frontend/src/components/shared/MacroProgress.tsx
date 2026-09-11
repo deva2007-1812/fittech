@@ -16,9 +16,9 @@ export function MacroProgress({ label, current, target, unit = 'g', color, class
   return (
     <div className={cn('space-y-1.5', className)}>
       <div className="flex items-center justify-between text-sm">
-        <span className="font-medium text-neutral-700">{label}</span>
-        <span className="text-neutral-500">
-          <span className="font-semibold text-neutral-800">{Math.round(current)}</span>
+        <span className="font-medium text-neutral-700 dark:text-neutral-300">{label}</span>
+        <span className="text-neutral-500 dark:text-neutral-400">
+          <span className="font-semibold text-neutral-800 dark:text-neutral-100">{Math.round(current)}</span>
           /{target}{unit}
         </span>
       </div>
