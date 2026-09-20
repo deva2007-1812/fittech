@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Sidebar } from '../components/layout/Sidebar';
 import { BottomNavigation } from '../components/layout/BottomNavigation';
 import { Outlet } from 'react-router-dom';
+
+// Lazy-load the AI Coach to avoid blocking the initial render
+const FloatingAICoach = lazy(() =>
+  import('../components/AI/FloatingAICoach').then(m => ({ default: m.FloatingAICoach }))
+);
 
 export function AppLayout() {
   return (
@@ -18,6 +23,11 @@ export function AppLayout() {
 
       {/* Mobile Bottom Nav */}
       <BottomNavigation />
+
+      {/* Floating AI Coach — persistent across all authenticated routes */}
+      <Suspense fallback={null}>
+        <FloatingAICoach />
+      </Suspense>
     </div>
   );
 }

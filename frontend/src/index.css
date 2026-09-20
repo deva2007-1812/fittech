@@ -156,3 +156,76 @@
     display: none;
   }
 }
+
+/* ─── AI Coach Animations ────────────────────────────────── */
+@keyframes ai-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes ai-pulse-ring {
+  0%   { box-shadow: 0 0 0 0   rgba(16, 185, 129, 0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(16, 185, 129, 0); }
+}
+
+@keyframes ai-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ai-panel-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+}
+
+@keyframes ai-dot-online {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.ai-float {
+  animation: ai-float 3s ease-in-out infinite;
+}
+
+.ai-pulse-ring {
+  animation: ai-pulse-ring 1.8s ease-out infinite;
+}
+
+.ai-panel-enter {
+  animation: ai-panel-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.ai-panel-exit {
+  animation: ai-panel-out 220ms cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+.ai-dot-online {
+  animation: ai-dot-online 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-float,
+  .ai-pulse-ring,
+  .ai-dot-online {
+    animation: none !important;
+  }
+  .ai-panel-enter,
+  .ai-panel-exit {
+    animation: none !important;
+    opacity: 1;
+    transform: none !important;
+  }
+}
