@@ -16,4 +16,10 @@ COPY --from=build /app/target/fitmind-backend-1.0.0.jar app.jar
 
 EXPOSE 10000
 
-CMD ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=65.0", "-XX:+UseSerialGC", "-Xss256k", "-jar", "app.jar"]
+CMD ["java", \
+     "-XX:+UseContainerSupport", \
+     "-XX:MaxRAMPercentage=65.0", \
+     "-XX:+UseSerialGC", \
+     "-Xss512k", \
+     "-Dserver.address=0.0.0.0", \
+     "-jar", "app.jar"]
