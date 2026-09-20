@@ -11,6 +11,18 @@ import java.util.List;
 /**
  * Automatically loads .env files and normalizes Supabase PostgreSQL connection strings
  * to ensure smooth connection without manual JDBC URI formatting.
+ *
+ * Supported input formats for SUPABASE_DB_URL:
+ *   1. jdbc:postgresql://host:port/db?params              (plain JDBC, no credentials in URL)
+ *   2. postgresql://user:pass@host:port/db                (raw Supabase URI)
+ *   3. postgres://user:pass@host:port/db                  (alias)
+ *   4. jdbc:postgresql://user:pass@host:port/db           (JDBC with embedded credentials)
+ *
+ * In all cases with embedded credentials the username and password are extracted
+ * and set as separate system properties (SUPABASE_DB_USERNAME / SUPABASE_DB_PASSWORD)
+ * so that HikariCP / JDBC receive them through the standard datasource.username /
+ * datasource.password properties — avoiding the dot-in-username JDBC parsing bug
+ * that causes "tenant/user postgres.xxx not found" on Supabase Pooler connections.
  */
 public class EnvLoader {
 
@@ -55,65 +67,121 @@ public class EnvLoader {
         normalizeSupabaseConfig();
     }
 
+    /**
+     * Resolves the effective SUPABASE_DB_URL, normalizes it to a clean JDBC URL
+     * (no embedded credentials), and extracts credentials into separate system
+     * properties so Spring's datasource.username / datasource.password can pick
+     * them up correctly.
+     *
+     * This prevents the "tenant/user postgres.xxx not found" error that occurs when
+     * JDBC tries to parse a URL like:
+     *   jdbc:postgresql://postgres.project-ref:password@host:port/db
+     * and the driver misinterprets the dot-notation Supabase pooler username.
+     */
     private static void normalizeSupabaseConfig() {
-        String supabaseUrl = System.getProperty("SUPABASE_DB_URL");
-        if (supabaseUrl == null || supabaseUrl.isBlank()) {
-            supabaseUrl = System.getenv("SUPABASE_DB_URL");
-        }
-        if (supabaseUrl == null || supabaseUrl.isBlank()) {
-            supabaseUrl = System.getProperty("DB_URL");
-        }
-        if (supabaseUrl == null || supabaseUrl.isBlank()) {
-            supabaseUrl = System.getenv("DB_URL");
+        String rawUrl = resolveEnvValue("SUPABASE_DB_URL", "DB_URL");
+        if (rawUrl == null || rawUrl.isBlank()) {
+            log.debug("No SUPABASE_DB_URL or DB_URL found; skipping Supabase normalization.");
+            return;
         }
 
-        if (supabaseUrl != null && !supabaseUrl.isBlank()) {
-            String trimmed = supabaseUrl.trim();
+        String url = rawUrl.trim();
 
-            // Handle Supabase URI with user info: jdbc:postgresql://[user]:[pass]@[host]...
-            if (trimmed.startsWith("jdbc:postgresql://") && trimmed.contains("@")) {
-                trimmed = trimmed.substring(5); // convert to postgresql:// so URI parser can extract credentials
-            }
+        // ── Step 1: strip jdbc: prefix so we can parse as a normal URI ──────────
+        // Handles: jdbc:postgresql://user:pass@host:port/db
+        //      and jdbc:postgresql://host:port/db
+        String parseableUrl = url;
+        if (parseableUrl.startsWith("jdbc:")) {
+            parseableUrl = parseableUrl.substring(5); // → postgresql://...
+        }
 
-            // Handle Supabase URI copied directly: postgresql://[user]:[pass]@[host]:[port]/[db]
-            if (trimmed.startsWith("postgresql://") || trimmed.startsWith("postgres://")) {
-                try {
-                    String sanitized = trimmed.replaceFirst("^postgres(ql)?://", "http://");
-                    java.net.URI uri = java.net.URI.create(sanitized);
-                    String userInfo = uri.getUserInfo();
-                    if (userInfo != null && userInfo.contains(":")) {
-                        String[] parts = userInfo.split(":", 2);
-                        if (System.getProperty("SUPABASE_DB_USERNAME") == null && System.getenv("SUPABASE_DB_USERNAME") == null) {
-                            System.setProperty("SUPABASE_DB_USERNAME", parts[0]);
-                        }
-                        if (System.getProperty("SUPABASE_DB_PASSWORD") == null && System.getenv("SUPABASE_DB_PASSWORD") == null) {
-                            System.setProperty("SUPABASE_DB_PASSWORD", parts[1]);
-                        }
-                    }
-                    int port = uri.getPort() > 0 ? uri.getPort() : 5432;
-                    String path = (uri.getPath() != null && !uri.getPath().isBlank() && !uri.getPath().equals("/"))
-                            ? uri.getPath()
-                            : "/postgres";
-                    String query = uri.getQuery();
-                    if (query == null || query.isBlank()) {
-                        query = "sslmode=require";
-                    } else if (!query.contains("sslmode=")) {
-                        query += "&sslmode=require";
-                    }
-                    String jdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + path + "?" + query;
-                    System.setProperty("SUPABASE_DB_URL", jdbcUrl);
-                    log.info("Configured Supabase JDBC URL: {}", jdbcUrl.replaceAll("password=[^&]*", "password=***"));
-                } catch (Exception e) {
-                    if (!trimmed.startsWith("jdbc:")) {
-                        System.setProperty("SUPABASE_DB_URL", "jdbc:" + trimmed);
+        // ── Step 2: parse URI only if it looks like a hierarchical URI ──────────
+        if (parseableUrl.startsWith("postgresql://") || parseableUrl.startsWith("postgres://")) {
+            try {
+                // Replace scheme with http:// so java.net.URI can parse user-info
+                // (the postgresql:// scheme is not natively supported by java.net.URI)
+                String httpUrl = parseableUrl.replaceFirst("^postgres(ql)?://", "http://");
+                java.net.URI uri = java.net.URI.create(httpUrl);
+
+                String extractedUser = null;
+                String extractedPass = null;
+
+                String userInfo = uri.getUserInfo(); // e.g. "postgres.project-ref:password"
+                if (userInfo != null && !userInfo.isBlank()) {
+                    int colon = userInfo.indexOf(':');
+                    if (colon > 0) {
+                        extractedUser = userInfo.substring(0, colon);
+                        extractedPass = userInfo.substring(colon + 1);
+                    } else {
+                        extractedUser = userInfo;
                     }
                 }
-            } else if (trimmed.startsWith("jdbc:postgresql://")) {
-                if ((trimmed.contains("supabase.co") || trimmed.contains("supabase.com")) && !trimmed.contains("sslmode=")) {
-                    String sep = trimmed.contains("?") ? "&" : "?";
-                    System.setProperty("SUPABASE_DB_URL", trimmed + sep + "sslmode=require");
+
+                // Set username / password as separate system properties if not already provided
+                setIfAbsent("SUPABASE_DB_USERNAME", extractedUser);
+                setIfAbsent("SUPABASE_DB_PASSWORD", extractedPass);
+
+                // Build clean JDBC URL — no credentials embedded
+                int port = uri.getPort() > 0 ? uri.getPort() : 5432;
+                String dbPath = (uri.getPath() != null && !uri.getPath().isBlank() && !uri.getPath().equals("/"))
+                        ? uri.getPath()   // e.g. "/postgres"
+                        : "/postgres";
+                String query = uri.getQuery();
+                if (query == null || query.isBlank()) {
+                    query = "sslmode=require";
+                } else if (!query.contains("sslmode=")) {
+                    query += "&sslmode=require";
                 }
+
+                String cleanJdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + dbPath + "?" + query;
+                System.setProperty("SUPABASE_DB_URL", cleanJdbcUrl);
+                log.info("Normalized Supabase JDBC URL: {}", cleanJdbcUrl.replaceAll("password=[^&]*", "password=***"));
+                if (extractedUser != null) {
+                    log.info("Extracted Supabase username: {}", extractedUser);
+                }
+                return;
+
+            } catch (IllegalArgumentException e) {
+                log.warn("Could not parse Supabase URI '{}': {}. Attempting fallback.", url, e.getMessage());
+                // Fall through to Step 3 / Step 4
             }
+        }
+
+        // ── Step 3: already jdbc:postgresql://host... with no credentials ────────
+        // Just ensure sslmode=require is present for Supabase hosts
+        if (url.startsWith("jdbc:postgresql://")) {
+            if ((url.contains("supabase.co") || url.contains("supabase.com")) && !url.contains("sslmode=")) {
+                String sep = url.contains("?") ? "&" : "?";
+                String fixedUrl = url + sep + "sslmode=require";
+                System.setProperty("SUPABASE_DB_URL", fixedUrl);
+                log.info("Added sslmode=require to Supabase JDBC URL.");
+            }
+            return;
+        }
+
+        // ── Step 4: last resort — prefix with jdbc: if missing ──────────────────
+        if (!url.startsWith("jdbc:")) {
+            System.setProperty("SUPABASE_DB_URL", "jdbc:" + url);
+            log.warn("Prefixed missing jdbc: scheme to SUPABASE_DB_URL.");
+        }
+    }
+
+    /** Read a value from system properties first, then env vars, across multiple key aliases. */
+    private static String resolveEnvValue(String... keys) {
+        for (String key : keys) {
+            String val = System.getProperty(key);
+            if (val != null && !val.isBlank()) return val;
+            val = System.getenv(key);
+            if (val != null && !val.isBlank()) return val;
+        }
+        return null;
+    }
+
+    /** Set a system property only if neither the system property nor the env var is already set. */
+    private static void setIfAbsent(String key, String value) {
+        if (value == null || value.isBlank()) return;
+        if (System.getProperty(key) == null && System.getenv(key) == null) {
+            System.setProperty(key, value);
         }
     }
 }
