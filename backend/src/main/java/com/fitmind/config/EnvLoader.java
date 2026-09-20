@@ -117,23 +117,49 @@ public class EnvLoader {
                     }
                 }
 
+                // Also inspect query string for user and password (e.g. from Supabase JDBC tab)
+                String rawQuery = uri.getRawQuery();
+                java.util.List<String> cleanParams = new java.util.ArrayList<>();
+                if (rawQuery != null && !rawQuery.isBlank()) {
+                    for (String part : rawQuery.split("&")) {
+                        if (part.startsWith("user=")) {
+                            if (extractedUser == null) {
+                                extractedUser = java.net.URLDecoder.decode(part.substring(5), java.nio.charset.StandardCharsets.UTF_8);
+                            }
+                        } else if (part.startsWith("password=")) {
+                            if (extractedPass == null) {
+                                extractedPass = java.net.URLDecoder.decode(part.substring(9), java.nio.charset.StandardCharsets.UTF_8);
+                            }
+                        } else if (!part.isBlank()) {
+                            cleanParams.add(part);
+                        }
+                    }
+                }
+
                 // Set username / password as separate system properties if not already provided
                 setIfAbsent("SUPABASE_DB_USERNAME", extractedUser);
                 setIfAbsent("SUPABASE_DB_PASSWORD", extractedPass);
+
+                // Ensure sslmode=require is present
+                boolean hasSsl = false;
+                for (String param : cleanParams) {
+                    if (param.startsWith("sslmode=")) {
+                        hasSsl = true;
+                        break;
+                    }
+                }
+                if (!hasSsl) {
+                    cleanParams.add("sslmode=require");
+                }
 
                 // Build clean JDBC URL — no credentials embedded
                 int port = uri.getPort() > 0 ? uri.getPort() : 5432;
                 String dbPath = (uri.getPath() != null && !uri.getPath().isBlank() && !uri.getPath().equals("/"))
                         ? uri.getPath()   // e.g. "/postgres"
                         : "/postgres";
-                String query = uri.getQuery();
-                if (query == null || query.isBlank()) {
-                    query = "sslmode=require";
-                } else if (!query.contains("sslmode=")) {
-                    query += "&sslmode=require";
-                }
+                String finalQuery = String.join("&", cleanParams);
 
-                String cleanJdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + dbPath + "?" + query;
+                String cleanJdbcUrl = "jdbc:postgresql://" + uri.getHost() + ":" + port + dbPath + (finalQuery.isEmpty() ? "" : "?" + finalQuery);
                 System.setProperty("SUPABASE_DB_URL", cleanJdbcUrl);
                 log.info("Normalized Supabase JDBC URL: {}", cleanJdbcUrl.replaceAll("password=[^&]*", "password=***"));
                 if (extractedUser != null) {
