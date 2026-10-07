@@ -136,9 +136,13 @@ public class EnvLoader {
                     }
                 }
 
-                // Set username / password as separate system properties if not already provided
-                setIfAbsent("SUPABASE_DB_USERNAME", extractedUser);
-                setIfAbsent("SUPABASE_DB_PASSWORD", extractedPass);
+                // Set username / password as separate system properties. Override any stale env vars.
+                if (extractedUser != null) {
+                    System.setProperty("SUPABASE_DB_USERNAME", extractedUser);
+                }
+                if (extractedPass != null) {
+                    System.setProperty("SUPABASE_DB_PASSWORD", extractedPass);
+                }
 
                 // Ensure sslmode=require is present
                 boolean hasSsl = false;
