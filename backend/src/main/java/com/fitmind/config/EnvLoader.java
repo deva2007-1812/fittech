@@ -124,11 +124,11 @@ public class EnvLoader {
                     for (String part : rawQuery.split("&")) {
                         if (part.startsWith("user=")) {
                             if (extractedUser == null) {
-                                extractedUser = java.net.URLDecoder.decode(part.substring(5), java.nio.charset.StandardCharsets.UTF_8);
+                                extractedUser = part.substring(5);
                             }
                         } else if (part.startsWith("password=")) {
                             if (extractedPass == null) {
-                                extractedPass = java.net.URLDecoder.decode(part.substring(9), java.nio.charset.StandardCharsets.UTF_8);
+                                extractedPass = part.substring(9);
                             }
                         } else if (!part.isBlank()) {
                             cleanParams.add(part);
