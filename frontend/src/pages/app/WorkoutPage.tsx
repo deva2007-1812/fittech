@@ -125,28 +125,28 @@ export function WorkoutPage() {
   const QUICK_EXERCISES = ['Running', 'Cycling', 'Swimming', 'Push-ups', 'Squats', 'Yoga', 'HIIT', 'Walking'];
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="page-title">Workout</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Track your exercises and stay active</p>
+          <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Track your exercises and stay active</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          <Plus size={16} /> Log Workout
+        <button onClick={() => setShowModal(true)} className="btn-primary flex-shrink-0">
+          <Plus size={16} /> <span className="hidden sm:inline">Log Workout</span><span className="sm:hidden">Log</span>
         </button>
       </div>
 
       {/* Today's Summary */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { label: 'Total Time', value: totalDuration > 0 ? formatDuration(totalDuration) : '—', color: 'text-purple-700 dark:text-purple-300', bg: 'bg-purple-50 dark:bg-purple-950/40 border-purple-100 dark:border-purple-900/40' },
           { label: 'Exercises', value: workouts.length.toString(), color: 'text-blue-700 dark:text-blue-300', bg: 'bg-blue-50 dark:bg-blue-950/40 border-blue-100 dark:border-blue-900/40' },
-          { label: 'Calories Burned', value: `${Math.round(totalDuration * 7)} kcal (est)`, color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/40' },
+          { label: 'Est. Burned', value: `${Math.round(totalDuration * 7)} kcal`, color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-950/40 border-amber-100 dark:border-amber-900/40' },
         ].map(({ label, value, color, bg }) => (
-          <div key={label} className={`card p-4 text-center ${bg}`}>
-            <p className={`text-xl font-bold ${color}`}>{value}</p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 font-medium">{label}</p>
+          <div key={label} className={`card p-3 sm:p-4 text-center ${bg}`}>
+            <p className={`text-base sm:text-xl font-bold ${color} truncate`}>{value}</p>
+            <p className="text-[10px] sm:text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 font-medium">{label}</p>
           </div>
         ))}
       </div>

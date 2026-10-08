@@ -219,9 +219,9 @@ export function AICoachPage() {
   ];
 
   return (
-    <div className="flex flex-col h-full max-h-screen">
+    <div className="flex flex-col" style={{ height: '100%', minHeight: 0 }}>
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 flex items-center justify-center">
             <Bot size={20} className="text-emerald-600 dark:text-emerald-400" />

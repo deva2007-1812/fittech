@@ -61,18 +61,18 @@ export function StatCard({
   const pct = target && current !== undefined ? calcPercent(current, target) : undefined;
 
   return (
-    <div className={cn('card p-5 flex flex-col gap-3', className)}>
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{label}</p>
-          <div className="flex items-baseline gap-1.5 mt-1">
-            <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">{value}</span>
-            {unit && <span className="text-sm text-neutral-500 dark:text-neutral-400">{unit}</span>}
+    <div className={cn('card p-3 sm:p-5 flex flex-col gap-2 sm:gap-3', className)}>
+      <div className="flex items-start justify-between gap-1">
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{label}</p>
+          <div className="flex items-baseline gap-1 sm:gap-1.5 mt-1">
+            <span className="text-lg sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 truncate">{value}</span>
+            {unit && <span className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 flex-shrink-0">{unit}</span>}
           </div>
-          {subtitle && <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500 mt-0.5 truncate">{subtitle}</p>}
         </div>
         {icon && (
-          <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0', colors.icon)}>
+          <div className={cn('w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center flex-shrink-0', colors.icon)}>
             {icon}
           </div>
         )}
@@ -91,8 +91,8 @@ export function StatCard({
             />
           </div>
           <div className="flex justify-between mt-1">
-            <span className="text-xs text-neutral-400 dark:text-neutral-500">{pct}% of goal</span>
-            {target && <span className="text-xs text-neutral-400 dark:text-neutral-500">/ {target}{unit}</span>}
+            <span className="text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500">{pct}% of goal</span>
+            {target && <span className="text-[10px] sm:text-xs text-neutral-400 dark:text-neutral-500">/ {target}{unit}</span>}
           </div>
         </div>
       )}

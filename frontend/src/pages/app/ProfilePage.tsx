@@ -47,28 +47,28 @@ export function ProfilePage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-2xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       <div>
         <h1 className="page-title">Profile</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Manage your personal information</p>
+        <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Manage your personal information</p>
       </div>
 
       {/* Avatar */}
-      <div className="card p-6 flex items-center gap-5">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 text-3xl font-bold">
+      <div className="card p-5 sm:p-6 flex items-center gap-3 sm:gap-5">
+        <div className="relative flex-shrink-0">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-700 text-2xl sm:text-3xl font-bold">
             {user?.name?.[0]?.toUpperCase() ?? 'U'}
           </div>
           <button className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center hover:bg-emerald-700 transition-colors" aria-label="Change photo">
             <Camera size={12} />
           </button>
         </div>
-        <div>
-          <p className="text-xl font-bold text-neutral-900">{user?.name}</p>
-          <p className="text-sm text-neutral-500">{user?.email}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-lg sm:text-xl font-bold text-neutral-900 truncate">{user?.name}</p>
+          <p className="text-xs sm:text-sm text-neutral-500 truncate">{user?.email}</p>
           <p className="text-xs text-emerald-600 font-medium mt-1 capitalize">{user?.fitnessGoal ? GOAL_LABELS[user.fitnessGoal] : 'Goal not set'}</p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex-shrink-0">
           {!isEditing && (
             <button onClick={() => setIsEditing(true)} className="btn-secondary text-sm">
               Edit

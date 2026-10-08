@@ -87,11 +87,11 @@ export function WaterPage() {
   }
 
   return (
-    <div className="p-6 lg:p-8 max-w-2xl mx-auto space-y-8 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-6 sm:space-y-8 animate-fade-in">
       {/* Header */}
       <div>
         <h1 className="page-title">Water Intake</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Stay hydrated throughout the day</p>
+        <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Stay hydrated throughout the day</p>
       </div>
 
       {/* Visual water tracker */}
@@ -135,9 +135,9 @@ export function WaterPage() {
       </div>
 
       {/* Quick add */}
-      <div className="card p-5 space-y-4">
+      <div className="card p-4 sm:p-5 space-y-4">
         <h3 className="section-title">Add Water</h3>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
           {QUICK_AMOUNTS.map(amount => (
             <button
               key={amount}

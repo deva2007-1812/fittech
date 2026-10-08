@@ -57,10 +57,10 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-2xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       <div>
         <h1 className="page-title">Settings</h1>
-        <p className="text-sm text-neutral-500 mt-0.5">Manage your app preferences</p>
+        <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Manage your app preferences</p>
       </div>
 
       {/* Account */}

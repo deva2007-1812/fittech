@@ -437,17 +437,17 @@ export function NutritionPage() {
   };
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="page-title">Nutrition</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-neutral-500 mt-0.5 truncate">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          <Plus size={16} /> Log Food
+        <button onClick={() => setShowModal(true)} className="btn-primary flex-shrink-0">
+          <Plus size={16} /> <span className="hidden sm:inline">Log Food</span><span className="sm:hidden">Log</span>
         </button>
       </div>
 
@@ -473,7 +473,7 @@ export function NutritionPage() {
           <MacroProgress label="Fat" current={Math.round(totals.fat)} target={fTarget} color="#8b5cf6" />
         </div>
         {/* Macro pills */}
-        <div className="flex gap-3 pt-1">
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2 sm:gap-3 pt-1">
           {[
             { label: 'Calories', value: `${Math.round(totals.calories)} kcal`, color: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300' },
             { label: 'Protein', value: `${Math.round(totals.protein)}g`, color: 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300' },

@@ -99,15 +99,15 @@ export function SleepPage() {
     : '—';
 
   return (
-    <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-3xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
           <h1 className="page-title">Sleep</h1>
-          <p className="text-sm text-neutral-500 mt-0.5">Track your rest for optimal recovery</p>
+          <p className="text-xs sm:text-sm text-neutral-500 mt-0.5">Track your rest for optimal recovery</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="btn-primary">
-          <Plus size={16} /> Log Sleep
+        <button onClick={() => setShowModal(true)} className="btn-primary flex-shrink-0">
+          <Plus size={16} /> <span className="hidden sm:inline">Log Sleep</span><span className="sm:hidden">Log</span>
         </button>
       </div>
 
@@ -153,15 +153,15 @@ export function SleepPage() {
       </div>
 
       {/* Sleep tips */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { label: 'Recommended', value: '7–9 hrs', color: 'bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300' },
           { label: 'Your Average', value: avgHours !== '—' ? `${avgHours} hrs` : '—', color: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300' },
           { label: 'Best Night', value: bestNight, color: 'bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300' },
         ].map(({ label, value, color }) => (
-          <div key={label} className={`${color} rounded-2xl p-4 text-center`}>
-            <p className="text-xl font-bold">{value}</p>
-            <p className="text-xs font-medium opacity-70 mt-1">{label}</p>
+          <div key={label} className={`${color} rounded-2xl p-3 sm:p-4 text-center`}>
+            <p className="text-lg sm:text-xl font-bold">{value}</p>
+            <p className="text-[10px] sm:text-xs font-medium opacity-70 mt-1">{label}</p>
           </div>
         ))}
       </div>

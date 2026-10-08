@@ -144,14 +144,14 @@ export function ProgressPage() {
     : '—';
 
   return (
-    <div className="p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-5 sm:space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h1 className="page-title">Progress</h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">Track your fitness metrics over time from database</p>
+          <p className="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">Track your fitness metrics over time from database</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <button
             onClick={() => setShowWeightModal(true)}
             className="btn-secondary text-xs py-2 px-3 flex items-center gap-1.5"
@@ -165,7 +165,7 @@ export function ProgressPage() {
                 key={value}
                 onClick={() => setRange(value)}
                 className={cn(
-                  'px-4 py-1.5 rounded-lg text-xs font-semibold transition-all',
+                  'px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all',
                   range === value
                     ? 'bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 shadow-sm'
                     : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200'
