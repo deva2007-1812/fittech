@@ -20,5 +20,7 @@ services:
         sync: false
       - key: AI_API_KEY
         sync: false
+      - key: AI_ENABLED
+        value: "true"
       - key: ALLOWED_ORIGINS
-        value: https://*.vercel.app,http://localhost:5173,http://localhost:3000
+        value: "https://*.vercel.app,http://localhost:5173,http://localhost:3000"

@@ -3,17 +3,20 @@ import axios, { type AxiosInstance, type AxiosResponse, type InternalAxiosReques
 function getBaseUrl(): string {
   let url = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api').trim();
   url = url.replace(/\/+$/, '');
-  if (!url.endsWith('/api')) {
-    url += '/api';
+  // Remove trailing /api if present so we can add it cleanly
+  if (url.endsWith('/api')) {
+    return url;
   }
-  return url;
+  return url + '/api';
 }
 
-const BASE_URL = getBaseUrl();
+export const BASE_URL = getBaseUrl();
 
+// Render free-tier services spin down after inactivity and need ~30-50s to cold start.
+// We use a generous 60s timeout to survive cold starts.
 const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
+  timeout: 60000,
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -106,10 +109,10 @@ export function getApiErrorMessage(error: unknown): string {
       return 'Server error. Please try again in a few moments.';
     }
     if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
-      return 'Request timed out. Please check if the server is running.';
+      return 'Server is waking up (cold start). Please wait a moment and try again.';
     }
     if (error.code === 'ERR_NETWORK' || !error.response) {
-      return 'Network error: Cannot reach the backend server at ' + BASE_URL;
+      return 'Cannot reach the backend server. If this is the first request, the server may be waking up — please try again in 30 seconds.';
     }
   }
   if (error instanceof Error) {

@@ -68,6 +68,7 @@ export function FloatingAICoach() {
         >
           <AICoachPanel
             onClose={coach.closePanel}
+            closePanel={coach.closePanel}
             aiState={coach.aiState}
             isOpen={coach.isOpen}
             messages={coach.messages}
