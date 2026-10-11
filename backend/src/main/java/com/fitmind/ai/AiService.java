@@ -39,7 +39,7 @@ public class AiService {
     @Value("${app.ai.api-key:}")
     private String apiKey;
 
-    @Value("${app.ai.gemini-url:https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent}")
+    @Value("${app.ai.gemini-url:https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent}")
     private String geminiUrl;
 
     @Value("${app.ai.enabled:true}")
