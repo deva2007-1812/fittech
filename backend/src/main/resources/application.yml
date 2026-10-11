@@ -56,7 +56,7 @@ app:
 
   ai:
     api-key: ${AI_API_KEY:}
-    gemini-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent
+    gemini-url: https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent
     enabled: ${AI_ENABLED:true}
 
   cors:

@@ -39,7 +39,7 @@ public class AiService {
     @Value("${app.ai.api-key:}")
     private String apiKey;
 
-    @Value("${app.ai.gemini-url:https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent}")
+    @Value("${app.ai.gemini-url:https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent}")
     private String geminiUrl;
 
     @Value("${app.ai.enabled:true}")
@@ -214,10 +214,24 @@ public class AiService {
                 .build());
     }
 
-    // ─── Gemini API Call ───────────────────────────────────────────────────────
+    private static final List<String> FALLBACK_MODELS = List.of(
+            "gemini-flash-lite-latest",
+            "gemini-3.5-flash",
+            "gemini-3.5-flash-lite",
+            "gemini-3.6-flash"
+    );
 
     private String callGemini(String prompt) {
-        String url = geminiUrl + "?key=" + apiKey;
+        List<String> urlsToTry = new ArrayList<>();
+        if (geminiUrl != null && !geminiUrl.isBlank()) {
+            urlsToTry.add(geminiUrl);
+        }
+        for (String model : FALLBACK_MODELS) {
+            String candidateUrl = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent";
+            if (!urlsToTry.contains(candidateUrl)) {
+                urlsToTry.add(candidateUrl);
+            }
+        }
 
         Map<String, Object> body = Map.of(
                 "contents", List.of(Map.of(
@@ -225,25 +239,38 @@ public class AiService {
                 ))
         );
 
-        try {
-            JsonNode response = webClient.post()
-                    .uri(url)
-                    .header("Content-Type", "application/json")
-                    .bodyValue(body)
-                    .retrieve()
-                    .bodyToMono(JsonNode.class)
-                    .block();
+        Exception lastException = null;
+        for (String targetUrl : urlsToTry) {
+            try {
+                String fullUrl = targetUrl + "?key=" + apiKey;
+                JsonNode response = webClient.post()
+                        .uri(fullUrl)
+                        .header("Content-Type", "application/json")
+                        .bodyValue(body)
+                        .retrieve()
+                        .bodyToMono(JsonNode.class)
+                        .block();
 
-            if (response == null) throw new AiServiceException("Empty response from Gemini");
-
-            return response.path("candidates").get(0)
-                    .path("content").path("parts").get(0)
-                    .path("text").asText("I'm having trouble responding right now.");
-        } catch (AiServiceException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new AiServiceException("Gemini API error: " + e.getMessage(), e);
+                if (response != null && response.has("candidates")) {
+                    JsonNode candidates = response.path("candidates");
+                    if (candidates.isArray() && !candidates.isEmpty()) {
+                        JsonNode parts = candidates.get(0).path("content").path("parts");
+                        if (parts.isArray() && !parts.isEmpty()) {
+                            for (JsonNode part : parts) {
+                                if (part.has("text") && !part.path("text").asText().isBlank()) {
+                                    return part.path("text").asText();
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("Gemini call to {} failed ({}), trying next model...", targetUrl, e.getMessage());
+                lastException = e;
+            }
         }
+
+        throw new AiServiceException("All Gemini models failed: " + (lastException != null ? lastException.getMessage() : "No response"), lastException);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
