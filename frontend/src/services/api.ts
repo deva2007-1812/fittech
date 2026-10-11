@@ -41,8 +41,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If 401 Unauthorized and not already retrying, attempt token refresh
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+    // If 401 Unauthorized or 403 Forbidden (session expired) and not already retrying, attempt token refresh
+    if ((error.response?.status === 401 || error.response?.status === 403) && originalRequest && !originalRequest._retry) {
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem('refreshToken');
 
