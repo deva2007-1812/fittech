@@ -7,6 +7,7 @@ import { generateId } from '../../utils/helpers';
 import type { ChatMessage } from '../../types';
 import { cn } from '../../utils/helpers';
 import toast from 'react-hot-toast';
+import { MarkdownMessage } from '../../components/AI/MarkdownMessage';
 
 function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () => void }) {
   const isUser = message.role === 'user';
@@ -37,7 +38,7 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () =
             <span className="text-xs text-neutral-400">Thinking…</span>
           </div>
         ) : (
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <MarkdownMessage content={message.content} isUser={isUser} />
         )}
 
         <div className="flex items-center justify-between mt-1.5 gap-2">

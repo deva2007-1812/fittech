@@ -3,6 +3,7 @@ import { RotateCcw } from 'lucide-react';
 import type { ChatMessage } from '../../types';
 import type { AICoachState } from '../../hooks/useAICoach';
 import { cn } from '../../utils/helpers';
+import { MarkdownMessage } from './MarkdownMessage';
 
 interface AIChatMessagesProps {
   messages: ChatMessage[];
@@ -71,7 +72,7 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry: () =>
             <span className="text-xs text-neutral-400">Thinking…</span>
           </div>
         ) : (
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          <MarkdownMessage content={message.content} isUser={isUser} />
         )}
 
         <div className="flex items-center justify-between mt-1 gap-2">
