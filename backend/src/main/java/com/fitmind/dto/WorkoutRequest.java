@@ -26,4 +26,6 @@ public class WorkoutRequest {
     private String notes;
 
     private String date; // ISO date yyyy-MM-dd
+
+    private Double caloriesBurned;
 }

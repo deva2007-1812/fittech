@@ -41,16 +41,18 @@ export function DashboardPage() {
   useEffect(() => {
     loadData();
 
-    const handleFoodLogged = () => {
+    const handleRefresh = () => {
       loadData();
     };
 
-    window.addEventListener('fitmind:food-logged', handleFoodLogged);
-    window.addEventListener('focus', handleFoodLogged);
+    window.addEventListener('fitmind:food-logged', handleRefresh);
+    window.addEventListener('fitmind:workout-logged', handleRefresh);
+    window.addEventListener('focus', handleRefresh);
 
     return () => {
-      window.removeEventListener('fitmind:food-logged', handleFoodLogged);
-      window.removeEventListener('focus', handleFoodLogged);
+      window.removeEventListener('fitmind:food-logged', handleRefresh);
+      window.removeEventListener('fitmind:workout-logged', handleRefresh);
+      window.removeEventListener('focus', handleRefresh);
     };
   }, []);
 

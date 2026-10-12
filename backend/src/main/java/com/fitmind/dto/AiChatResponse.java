@@ -10,4 +10,5 @@ import java.util.List;
 public class AiChatResponse {
     private String reply;
     private List<FoodLogResponse> loggedFoods;
+    private List<WorkoutResponse> loggedWorkouts;
 }

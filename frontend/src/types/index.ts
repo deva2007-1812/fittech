@@ -153,6 +153,7 @@ export interface ChatMessage {
   timestamp: string;
   isLoading?: boolean;
   loggedFoods?: FoodEntry[];
+  loggedWorkouts?: WorkoutEntry[];
 }
 
 export interface AIInsight {

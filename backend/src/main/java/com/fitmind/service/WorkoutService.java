@@ -29,17 +29,60 @@ public class WorkoutService {
 
         LocalDate date = parseDate(request.getDate());
 
+        int duration = 0;
+        if (request.getDuration() != null && request.getDuration() > 0) {
+            duration = request.getDuration();
+        } else if (request.getSets() != null && request.getSets() > 0) {
+            duration = Math.max(10, request.getSets() * 4);
+        } else {
+            duration = 15;
+        }
+
+        BigDecimal caloriesBurned = null;
+        if (request.getCaloriesBurned() != null && request.getCaloriesBurned() > 0) {
+            caloriesBurned = BigDecimal.valueOf(request.getCaloriesBurned());
+        } else if (duration > 0) {
+            caloriesBurned = BigDecimal.valueOf(estimateCaloriesBurned(request.getExercise(), duration));
+        }
+
         WorkoutLog log = WorkoutLog.builder()
                 .user(user)
                 .exercise(request.getExercise())
-                .duration(request.getDuration() != null ? request.getDuration() : 0)
+                .duration(duration)
                 .sets(request.getSets())
                 .repetitions(request.getReps())
                 .notes(request.getNotes())
+                .caloriesBurned(caloriesBurned)
                 .workoutDate(date)
                 .build();
 
         return toResponse(workoutLogRepository.save(log));
+    }
+
+    public double estimateCaloriesBurned(String exercise, int durationMinutes) {
+        if (exercise == null || durationMinutes <= 0) return 0.0;
+        String lower = exercise.toLowerCase();
+        double burnPerMinute;
+        if (lower.contains("run") || lower.contains("jog")) {
+            burnPerMinute = 10.5;
+        } else if (lower.contains("cycl") || lower.contains("bike")) {
+            burnPerMinute = 8.5;
+        } else if (lower.contains("swim")) {
+            burnPerMinute = 9.5;
+        } else if (lower.contains("hiit") || lower.contains("circuit")) {
+            burnPerMinute = 11.0;
+        } else if (lower.contains("walk")) {
+            burnPerMinute = 4.5;
+        } else if (lower.contains("yoga") || lower.contains("stretch") || lower.contains("pilates")) {
+            burnPerMinute = 4.0;
+        } else if (lower.contains("jump") || lower.contains("rope")) {
+            burnPerMinute = 12.0;
+        } else if (lower.contains("press") || lower.contains("squat") || lower.contains("deadlift") || lower.contains("curl") || lower.contains("weight") || lower.contains("gym") || lower.contains("bench") || lower.contains("push-up") || lower.contains("pull-up")) {
+            burnPerMinute = 6.5;
+        } else {
+            burnPerMinute = 6.0;
+        }
+        return Math.round(burnPerMinute * durationMinutes * 10.0) / 10.0;
     }
 
     public List<WorkoutResponse> getTodayWorkouts(UUID userId) {

@@ -1,12 +1,12 @@
 import api from './api';
-import type { ChatMessage, AIInsight, FoodEntry } from '../types';
+import type { ChatMessage, AIInsight, FoodEntry, WorkoutEntry } from '../types';
 
 export const aiService = {
   sendMessage: async (
     message: string,
     history?: { role: string; content: string }[]
-  ): Promise<{ reply: string; loggedFoods?: FoodEntry[] }> => {
-    const response = await api.post<{ reply: string; loggedFoods?: FoodEntry[] }>('/ai/chat', { message, history });
+  ): Promise<{ reply: string; loggedFoods?: FoodEntry[]; loggedWorkouts?: WorkoutEntry[] }> => {
+    const response = await api.post<{ reply: string; loggedFoods?: FoodEntry[]; loggedWorkouts?: WorkoutEntry[] }>('/ai/chat', { message, history });
     return response.data;
   },
 
@@ -25,8 +25,25 @@ export const aiService = {
     return response.data;
   },
 
-  processVoiceText: async (transcript: string): Promise<{ reply: string; foodEntries?: FoodEntry[] }> => {
-    const response = await api.post<{ reply: string; foodEntries?: FoodEntry[] }>('/ai/voice', { transcript });
+  analyzeWorkoutText: async (text: string): Promise<WorkoutEntry[]> => {
+    const response = await api.post<WorkoutEntry[]>('/ai/workout-analysis', { text });
+    return response.data;
+  },
+
+  processVoiceText: async (transcript: string): Promise<{
+    reply: string;
+    foodEntries?: FoodEntry[];
+    loggedFoods?: FoodEntry[];
+    workoutEntries?: WorkoutEntry[];
+    loggedWorkouts?: WorkoutEntry[];
+  }> => {
+    const response = await api.post<{
+      reply: string;
+      foodEntries?: FoodEntry[];
+      loggedFoods?: FoodEntry[];
+      workoutEntries?: WorkoutEntry[];
+      loggedWorkouts?: WorkoutEntry[];
+    }>('/ai/voice', { transcript });
     return response.data;
   },
 };

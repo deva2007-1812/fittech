@@ -78,6 +78,18 @@ export function WorkoutPage() {
 
   useEffect(() => {
     fetchWorkouts();
+
+    const handleWorkoutLogged = () => {
+      fetchWorkouts();
+    };
+
+    window.addEventListener('fitmind:workout-logged', handleWorkoutLogged);
+    window.addEventListener('focus', handleWorkoutLogged);
+
+    return () => {
+      window.removeEventListener('fitmind:workout-logged', handleWorkoutLogged);
+      window.removeEventListener('focus', handleWorkoutLogged);
+    };
   }, []);
 
   const totalDuration = workouts.reduce((s, w) => s + (w.duration || 0), 0);
@@ -86,6 +98,7 @@ export function WorkoutPage() {
     try {
       await workoutService.deleteWorkout(id);
       toast.success('Workout removed');
+      window.dispatchEvent(new CustomEvent('fitmind:workout-logged'));
       await fetchWorkouts();
     } catch (err) {
       toast.error(getApiErrorMessage(err));
@@ -114,6 +127,7 @@ export function WorkoutPage() {
       toast.success('Workout logged to database!');
       setShowModal(false);
       setForm({ exercise: '', duration: '', sets: '', reps: '', notes: '' });
+      window.dispatchEvent(new CustomEvent('fitmind:workout-logged'));
       await fetchWorkouts();
     } catch (err) {
       toast.error(getApiErrorMessage(err));

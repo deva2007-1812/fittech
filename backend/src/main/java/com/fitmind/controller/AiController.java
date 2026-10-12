@@ -54,8 +54,20 @@ public class AiController {
         return ResponseEntity.status(HttpStatus.CREATED).body(logged);
     }
 
+    @PostMapping("/workout-analysis")
+    @Operation(summary = "Parse natural language workout description and log it")
+    public ResponseEntity<List<WorkoutResponse>> analyzeWorkoutText(@RequestBody Map<String, String> body) {
+        String text = body.get("text");
+        if (text == null || text.isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
+        List<WorkoutResponse> logged = aiService.processWorkoutFromText(
+                authUtils.getCurrentUserId(), text);
+        return ResponseEntity.status(HttpStatus.CREATED).body(logged);
+    }
+
     @PostMapping("/voice")
-    @Operation(summary = "Process voice transcript and log foods")
+    @Operation(summary = "Process voice transcript and log foods or workouts")
     public ResponseEntity<Map<String, Object>> processVoice(@RequestBody Map<String, String> body) {
         String transcript = body.get("transcript");
         if (transcript == null || transcript.isBlank()) {
@@ -65,11 +77,14 @@ public class AiController {
         AiChatRequest chatReq = AiChatRequest.builder().message(transcript).build();
         AiChatResponse chatResp = aiService.chat(authUtils.getCurrentUserId(), chatReq);
         List<FoodLogResponse> foodEntries = chatResp.getLoggedFoods() != null ? chatResp.getLoggedFoods() : Collections.emptyList();
+        List<WorkoutResponse> workoutEntries = chatResp.getLoggedWorkouts() != null ? chatResp.getLoggedWorkouts() : Collections.emptyList();
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("reply", chatResp.getReply());
         response.put("foodEntries", foodEntries);
         response.put("loggedFoods", foodEntries);
+        response.put("workoutEntries", workoutEntries);
+        response.put("loggedWorkouts", workoutEntries);
         return ResponseEntity.ok(response);
     }
 

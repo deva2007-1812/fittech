@@ -104,6 +104,11 @@ export function useAICoach(): UseAICoachReturn {
         toast.success(`Logged ${data.loggedFoods.length} food item(s) to Nutrition!`, { icon: '🍎' });
       }
 
+      if (data.loggedWorkouts && data.loggedWorkouts.length > 0) {
+        window.dispatchEvent(new CustomEvent('fitmind:workout-logged', { detail: data.loggedWorkouts }));
+        toast.success(`Logged ${data.loggedWorkouts.length} workout(s) to Workout Tracker!`, { icon: '💪' });
+      }
+
       setMessages(prev =>
         prev.map(m =>
           m.id === loadingMsg.id
@@ -111,6 +116,7 @@ export function useAICoach(): UseAICoachReturn {
                 ...m,
                 content: data.reply || "I've reviewed your data! How else can I help?",
                 loggedFoods: data.loggedFoods,
+                loggedWorkouts: data.loggedWorkouts,
                 isLoading: false,
               }
             : m

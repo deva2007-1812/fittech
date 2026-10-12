@@ -8,6 +8,7 @@ import com.fitmind.entity.*;
 import com.fitmind.exception.AiServiceException;
 import com.fitmind.nutrition.NutritionService;
 import com.fitmind.repository.FoodRepository;
+import com.fitmind.service.WorkoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class AiService {
     private final WebClient webClient;
     private final AiContextService aiContextService;
     private final NutritionService nutritionService;
+    private final WorkoutService workoutService;
     private final FoodRepository foodRepository;
     private final ObjectMapper objectMapper;
 
@@ -53,9 +55,11 @@ public class AiService {
     public AiChatResponse chat(UUID userId, AiChatRequest request) {
         String userMessage = request.getMessage() != null ? request.getMessage().trim() : "";
         List<FoodLogResponse> loggedFoods = new ArrayList<>();
+        List<WorkoutResponse> loggedWorkouts = new ArrayList<>();
         String reply = null;
 
-        boolean loggingIntent = isFoodLoggingIntent(userMessage, request.getHistory());
+        boolean foodLoggingIntent = isFoodLoggingIntent(userMessage, request.getHistory());
+        boolean workoutLoggingIntent = isWorkoutLoggingIntent(userMessage, request.getHistory());
 
         if (aiEnabled && apiKey != null && !apiKey.isBlank()) {
             String context = aiContextService.buildContext(userId);
@@ -64,11 +68,12 @@ public class AiService {
 
             try {
                 String rawReply = callGemini(prompt);
-                List<ParsedFoodItem> geminiItems = extractFoodLogJson(rawReply);
-                reply = cleanFoodLogJsonFromReply(rawReply);
+                List<ParsedFoodItem> geminiFoodItems = extractFoodLogJson(rawReply);
+                List<ParsedWorkoutItem> geminiWorkoutItems = extractWorkoutLogJson(rawReply);
+                reply = cleanJsonFromReply(rawReply);
 
-                if (!geminiItems.isEmpty()) {
-                    for (ParsedFoodItem item : geminiItems) {
+                if (!geminiFoodItems.isEmpty()) {
+                    for (ParsedFoodItem item : geminiFoodItems) {
                         try {
                             FoodLogResponse saved = logParsedFoodItem(userId, item);
                             if (saved != null) loggedFoods.add(saved);
@@ -77,13 +82,24 @@ public class AiService {
                         }
                     }
                 }
+
+                if (!geminiWorkoutItems.isEmpty()) {
+                    for (ParsedWorkoutItem item : geminiWorkoutItems) {
+                        try {
+                            WorkoutResponse saved = logParsedWorkoutItem(userId, item);
+                            if (saved != null) loggedWorkouts.add(saved);
+                        } catch (Exception e) {
+                            log.warn("Failed to log parsed workout item {}: {}", item.getExercise(), e.getMessage());
+                        }
+                    }
+                }
             } catch (Exception e) {
                 log.warn("Gemini chat error: {}", e.getMessage());
             }
         }
 
-        // If food was not logged via Gemini, but user explicitly asked to log food (or Gemini is offline/fallback)
-        if (loggedFoods.isEmpty() && loggingIntent) {
+        // Fallback food logging if intent detected but not captured by Gemini
+        if (loggedFoods.isEmpty() && foodLoggingIntent) {
             MealType detectedMealType = detectMealTypeFromText(userMessage, null);
             List<ParsedFoodItem> fallbackItems = extractFoodItemsHeuristically(userMessage, detectedMealType);
             for (ParsedFoodItem item : fallbackItems) {
@@ -96,10 +112,31 @@ public class AiService {
             }
         }
 
-        // If foods were logged, ensure user receives a clear confirmation
-        if (!loggedFoods.isEmpty()) {
+        // Fallback workout logging if intent detected but not captured by Gemini
+        if (loggedWorkouts.isEmpty() && workoutLoggingIntent) {
+            List<ParsedWorkoutItem> fallbackWorkouts = extractWorkoutItemsHeuristically(userMessage);
+            for (ParsedWorkoutItem item : fallbackWorkouts) {
+                try {
+                    WorkoutResponse saved = logParsedWorkoutItem(userId, item);
+                    if (saved != null) loggedWorkouts.add(saved);
+                } catch (Exception e) {
+                    log.warn("Failed to log fallback workout item {}: {}", item.getExercise(), e.getMessage());
+                }
+            }
+        }
+
+        // Format confirmation replies if needed
+        if (!loggedFoods.isEmpty() && !loggedWorkouts.isEmpty()) {
+            if (reply == null || reply.isBlank() || isGenericFallback(reply)) {
+                reply = buildCombinedLoggedReply(loggedFoods, loggedWorkouts);
+            }
+        } else if (!loggedFoods.isEmpty()) {
             if (reply == null || reply.isBlank() || isGenericFallback(reply)) {
                 reply = buildFoodLoggedReply(loggedFoods);
+            }
+        } else if (!loggedWorkouts.isEmpty()) {
+            if (reply == null || reply.isBlank() || isGenericFallback(reply)) {
+                reply = buildWorkoutLoggedReply(loggedWorkouts);
             }
         } else if (reply == null || reply.isBlank()) {
             reply = getFallbackChatResponse(userMessage);
@@ -108,6 +145,7 @@ public class AiService {
         return AiChatResponse.builder()
                 .reply(reply)
                 .loggedFoods(loggedFoods)
+                .loggedWorkouts(loggedWorkouts)
                 .build();
     }
 
@@ -316,6 +354,18 @@ public class AiService {
                 ]
                 ```
                 Only output the ```json:food_log block if the user is actually logging or reporting foods they consumed. Do NOT output it for general nutrition queries, recipes, or fitness questions.
+
+                WORKOUT LOGGING INSTRUCTIONS:
+                If the user says they worked out, exercised, trained, ran, cycled, lifted weights, or asks you to log, record, or track a workout, exercise, or physical activity (e.g. 'I just ran for 30 minutes', 'log workout: 3 sets of bench press 10 reps', 'I did 45 mins of cycling and burned 350 kcal', 'log 20 min HIIT workout'):
+                1. Identify each exercise name, duration in minutes, sets, reps, and estimated calories burned.
+                2. In your friendly conversational response, clearly confirm what has been logged to their workout tracker, the active minutes, and estimated calories burned, encouraging their consistency.
+                3. At the VERY END of your response, append a JSON code block with the exact tag ```json:workout_log containing an array of parsed items:
+                ```json:workout_log
+                [
+                  {"exercise": "Running", "duration": 30, "sets": null, "reps": null, "caloriesBurned": 280, "notes": "Outdoor run"}
+                ]
+                ```
+                Only output the ```json:workout_log block if the user is actually logging or reporting completed exercises or workouts. Do NOT output it for workout routine planning, fitness tips, or questions about how to perform exercises.
                 """;
     }
 
@@ -337,6 +387,12 @@ public class AiService {
                     + "• *'2 rotis and 1 bowl dal for lunch'*\n"
                     + "• *'1 banana and 1 scoop protein shake'*\n\n"
                     + "Just tell me and I'll calculate your calories and macros and save it directly to your Nutrition log!";
+        } else if (lower.contains("log my workout") || lower.contains("log workout") || lower.contains("log exercise")) {
+            return "I'm ready to log your workout! Tell me what you did, for example:\n\n"
+                    + "• *'30 minutes of running outdoor'*\n"
+                    + "• *'3 sets of 10 bench press and 3 sets of 12 squats'*\n"
+                    + "• *'45 mins cycling, burned 320 kcal'*\n\n"
+                    + "Just tell me and I'll calculate your active minutes and calories burned and save it directly to your Workout tracker!";
         } else if (lower.contains("calorie") || lower.contains("food") || lower.contains("eat")) {
             return "I'd recommend focusing on whole foods and balanced macros. Make sure to log your meals to track your nutrition accurately!";
         } else if (lower.contains("workout") || lower.contains("exercise") || lower.contains("gym")) {
@@ -443,9 +499,9 @@ public class AiService {
         return Collections.emptyList();
     }
 
-    private String cleanFoodLogJsonFromReply(String text) {
+    private String cleanJsonFromReply(String text) {
         if (text == null) return "";
-        String cleaned = text.replaceAll("```(?:json:food_log|json)\\s*\\[[\\s\\S]*?\\]\\s*```", "").trim();
+        String cleaned = text.replaceAll("```(?:json:food_log|json:workout_log|json)\\s*\\[[\\s\\S]*?\\]\\s*```", "").trim();
         // If raw json array is left at the end
         cleaned = cleaned.replaceAll("\\[\\s*\\{[\\s\\S]*?\\}\\s*\\]", "").trim();
         return cleaned;
@@ -463,6 +519,122 @@ public class AiService {
             log.warn("Failed to parse food items JSON: {}", e.getMessage());
         }
         return Collections.emptyList();
+    }
+
+    private List<ParsedWorkoutItem> extractWorkoutLogJson(String text) {
+        if (text == null || text.isBlank()) return Collections.emptyList();
+
+        Pattern pattern = Pattern.compile("```(?:json:workout_log|json)\\s*(\\[[\\s\\S]*?\\])\\s*```");
+        Matcher matcher = pattern.matcher(text);
+        while (matcher.find()) {
+            String json = matcher.group(1);
+            if (json.contains("\"exercise\"")) {
+                List<ParsedWorkoutItem> items = parseWorkoutItemsFromJson(json);
+                if (!items.isEmpty()) return items;
+            }
+        }
+
+        // Fallback: look for raw JSON array if markers missing
+        int start = text.indexOf('[');
+        int end = text.lastIndexOf(']');
+        if (start >= 0 && end > start && text.substring(start, end).contains("\"exercise\"")) {
+            return parseWorkoutItemsFromJson(text.substring(start, end + 1));
+        }
+
+        return Collections.emptyList();
+    }
+
+    private List<ParsedWorkoutItem> parseWorkoutItemsFromJson(String json) {
+        try {
+            int start = json.indexOf('[');
+            int end = json.lastIndexOf(']');
+            if (start >= 0 && end > start) {
+                String sub = json.substring(start, end + 1);
+                return objectMapper.readValue(sub, new TypeReference<List<ParsedWorkoutItem>>() {});
+            }
+        } catch (Exception e) {
+            log.warn("Failed to parse workout items JSON: {}", e.getMessage());
+        }
+        return Collections.emptyList();
+    }
+
+    private WorkoutResponse logParsedWorkoutItem(UUID userId, ParsedWorkoutItem item) {
+        if (item.getExercise() == null || item.getExercise().isBlank()) return null;
+
+        String exercise = capitalizeWords(item.getExercise().trim());
+        int duration = item.getDuration() != null && item.getDuration() > 0 ? item.getDuration() : 15;
+        Double caloriesBurned = item.getCaloriesBurned();
+
+        WorkoutRequest req = WorkoutRequest.builder()
+                .exercise(exercise)
+                .duration(duration)
+                .sets(item.getSets())
+                .reps(item.getReps())
+                .caloriesBurned(caloriesBurned)
+                .notes(item.getNotes())
+                .date(LocalDate.now().toString())
+                .build();
+
+        return workoutService.addWorkout(userId, req);
+    }
+
+    public boolean isWorkoutLoggingIntent(String text, List<Map<String, String>> history) {
+        if (text == null || text.isBlank()) return false;
+        String lower = text.toLowerCase().trim();
+
+        // Avoid pure queries / question sentences
+        if (lower.matches("^(how to|how do i|how many sets|what is the best|suggest a workout|can i do|should i do|tell me about|how to perform|why do)\\b.*")) {
+            return false;
+        }
+
+        // Explicit workout logging commands
+        if (lower.matches(".*\\b(log (my )?(workout|exercise|training|run|running|cardio|session)|add to (my )?(workout|exercise) log|track (my )?(workout|exercise))\\b.*")) {
+            return true;
+        }
+
+        // Activity completion statements
+        if (lower.matches(".*\\b(i (just )?(worked out|exercised|trained|ran|jogged|cycled|swam|walked|lifted weights?|did|completed))\\b.*")
+                && (lower.matches(".*\\b(min|mins|minutes?|km|miles?|sets?|reps?|repetition|push-?ups?|squats?|pull-?ups?|bench|hiit|yoga|cardio|gym|workout)\\b.*"))) {
+            return true;
+        }
+
+        // Prefix syntax: "workout: 3 sets bench press", "exercise: running 30 mins"
+        if (lower.matches("^(workout|exercise|activity):.*")) {
+            return true;
+        }
+
+        // Sets / reps direct notation, e.g. "3 sets of 10 pushups", "4 sets squats 12 reps"
+        if (lower.matches(".*\\b\\d+\\s*(sets?|x)\\s*(of\\s*)?\\d*\\s*(reps?)?\\s*[a-zA-Z].*")) {
+            return true;
+        }
+
+        // Check history
+        if (history != null && !history.isEmpty()) {
+            Map<String, String> lastTurn = history.get(history.size() - 1);
+            if (lastTurn != null && "assistant".equalsIgnoreCase(lastTurn.get("role"))) {
+                String assistantMsg = lastTurn.get("content") != null ? lastTurn.get("content").toLowerCase() : "";
+                if (assistantMsg.contains("log your workout") || assistantMsg.contains("what exercise did you do") || assistantMsg.contains("track your workout")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public List<WorkoutResponse> processWorkoutFromText(UUID userId, String text) {
+        if (text == null || text.isBlank()) return Collections.emptyList();
+        List<ParsedWorkoutItem> items = extractWorkoutItemsHeuristically(text);
+        List<WorkoutResponse> responses = new ArrayList<>();
+        for (ParsedWorkoutItem item : items) {
+            try {
+                WorkoutResponse resp = logParsedWorkoutItem(userId, item);
+                if (resp != null) responses.add(resp);
+            } catch (Exception e) {
+                log.warn("Failed to process workout from text '{}': {}", item.getExercise(), e.getMessage());
+            }
+        }
+        return responses;
     }
 
     private MealType detectMealTypeFromText(String text, MealType defaultType) {
@@ -613,6 +785,184 @@ public class AiService {
         String lower = text.toLowerCase();
         return lower.contains("i'd recommend focusing on whole foods")
                 || lower.contains("i'm fitmind ai, your personal fitness");
+    }
+
+    public List<ParsedWorkoutItem> extractWorkoutItemsHeuristically(String text) {
+        List<ParsedWorkoutItem> items = new ArrayList<>();
+        if (text == null || text.isBlank()) return items;
+
+        String cleaned = text.replaceAll("(?i)^(please\\s+)?(log\\s+(my\\s+)?workout(:|\\s+)?|log\\s+(my\\s+)?exercise(:|\\s+)?|log\\s+|add\\s+(workout\\s+)?to\\s+(my\\s+)?(workout\\s+)?log(:|\\s+)?|add\\s+|i\\s+(just\\s+)?(worked out|exercised|trained|did|completed)?\\s*|track\\s+(my\\s+)?(workout|exercise)?(:|\\s+)?)", "").trim();
+        cleaned = cleaned.replaceAll("(?i)\\s+to\\s+(my\\s+)?(workout\\s+)?log$", "").trim();
+
+        // Extract calories if mentioned anywhere in the statement (e.g. "burned 250 kcal" or "and burned 350 calories")
+        Double globalCalories = null;
+        Matcher globalCalMatcher = Pattern.compile("(?i)(\\d+(?:\\.\\d+)?)\\s*(?:kcal|calories|cal(?:s)?)(?:\\s+burned)?").matcher(cleaned);
+        if (globalCalMatcher.find()) {
+            try {
+                globalCalories = Double.parseDouble(globalCalMatcher.group(1));
+                cleaned = cleaned.replace(globalCalMatcher.group(0), " ");
+            } catch (Exception ignored) {}
+        }
+        cleaned = cleaned.replaceAll("(?i)\\b(and\\s+)?(burned|burn)\\b", " ").trim();
+
+        // Check if there are multiple exercises separated by ',' or 'and'
+        String[] parts = cleaned.split("(?i)\\s*(?:,|\\band\\b|\\&|\\+)\\s*");
+
+        for (String part : parts) {
+            String p = part.trim();
+            if (p.isBlank() || p.length() < 2) continue;
+
+            // Extract duration if mentioned (e.g. "30 mins", "45 minutes", "1 hour")
+            Integer duration = null;
+            Matcher durMatcher = Pattern.compile("(?i)(\\d+(?:\\.\\d+)?)\\s*(?:min(?:ute)?s?|mins?)\\b").matcher(p);
+            if (durMatcher.find()) {
+                try {
+                    duration = (int) Math.round(Double.parseDouble(durMatcher.group(1)));
+                    p = p.replace(durMatcher.group(0), " ").trim();
+                } catch (Exception ignored) {}
+            } else {
+                Matcher hrMatcher = Pattern.compile("(?i)(\\d+(?:\\.\\d+)?|an?|one|two)\\s*(?:hours?|hrs?)\\b").matcher(p);
+                if (hrMatcher.find()) {
+                    String hrStr = hrMatcher.group(1).toLowerCase();
+                    double hrs = switch (hrStr) {
+                        case "a", "an", "one" -> 1.0;
+                        case "two" -> 2.0;
+                        default -> {
+                            try { yield Double.parseDouble(hrStr); } catch (Exception e) { yield 1.0; }
+                        }
+                    };
+                    duration = (int) Math.round(hrs * 60);
+                    p = p.replace(hrMatcher.group(0), " ").trim();
+                }
+            }
+
+            // Extract sets and reps if mentioned
+            Integer sets = null;
+            Integer reps = null;
+            Matcher setsRepsMatcher = Pattern.compile("(?i)(\\d+)\\s*(?:sets?)\\s*(?:of|x)?\\s*(\\d+)?\\s*(?:reps?|repetitions?)?").matcher(p);
+            if (setsRepsMatcher.find()) {
+                try {
+                    sets = Integer.parseInt(setsRepsMatcher.group(1));
+                    if (setsRepsMatcher.group(2) != null) {
+                        reps = Integer.parseInt(setsRepsMatcher.group(2));
+                    }
+                    p = p.replace(setsRepsMatcher.group(0), " ").trim();
+                } catch (Exception ignored) {}
+            } else {
+                Matcher xMatcher = Pattern.compile("(?i)(\\d+)\\s*x\\s*(\\d+)").matcher(p);
+                if (xMatcher.find()) {
+                    try {
+                        sets = Integer.parseInt(xMatcher.group(1));
+                        reps = Integer.parseInt(xMatcher.group(2));
+                        p = p.replace(xMatcher.group(0), " ").trim();
+                    } catch (Exception ignored) {}
+                } else {
+                    Matcher repsOnlyMatcher = Pattern.compile("(?i)(\\d+)\\s*(?:reps?|repetitions?)\\b").matcher(p);
+                    if (repsOnlyMatcher.find()) {
+                        try {
+                            reps = Integer.parseInt(repsOnlyMatcher.group(1));
+                            sets = 1;
+                            p = p.replace(repsOnlyMatcher.group(0), " ").trim();
+                        } catch (Exception ignored) {}
+                    }
+                }
+            }
+
+            // Clean exercise text from conjunctions / preposition words
+            String exerciseName = p.replaceAll("(?i)\\b(for|of|in|today|session|workout|i|just)\\b", " ")
+                    .replaceAll("\\s+", " ").trim();
+
+            exerciseName = normalizeExerciseName(exerciseName);
+            if (exerciseName.isBlank() || exerciseName.length() < 2) {
+                if (duration == null && sets == null && reps == null) {
+                    continue; // Skip noise fragments
+                }
+                exerciseName = "Workout";
+            }
+
+            if (duration == null) {
+                if (sets != null) {
+                    duration = Math.max(10, sets * 4);
+                } else {
+                    duration = 20;
+                }
+            }
+
+            Double caloriesBurned = globalCalories != null ? globalCalories : workoutService.estimateCaloriesBurned(exerciseName, duration);
+
+            items.add(ParsedWorkoutItem.builder()
+                    .exercise(capitalizeWords(exerciseName))
+                    .duration(duration)
+                    .sets(sets)
+                    .reps(reps)
+                    .caloriesBurned(caloriesBurned)
+                    .build());
+        }
+
+        return items;
+    }
+
+    private String normalizeExerciseName(String raw) {
+        if (raw == null) return "Workout";
+        String lower = raw.toLowerCase().trim();
+        if (lower.contains("ran") || lower.contains("running") || lower.contains("run")) return "Running";
+        if (lower.contains("jogged") || lower.contains("jogging") || lower.contains("jog")) return "Jogging";
+        if (lower.contains("walked") || lower.contains("walking") || lower.contains("walk")) return "Walking";
+        if (lower.contains("cycled") || lower.contains("cycling") || lower.contains("bike") || lower.contains("biking")) return "Cycling";
+        if (lower.contains("swam") || lower.contains("swimming") || lower.contains("swim")) return "Swimming";
+        if (lower.contains("hiit") || lower.contains("interval")) return "HIIT";
+        if (lower.contains("yoga")) return "Yoga";
+        if (lower.contains("pilates")) return "Pilates";
+        if (lower.contains("bench press") || lower.contains("bench")) return "Bench Press";
+        if (lower.contains("squat")) return "Squats";
+        if (lower.contains("deadlift")) return "Deadlifts";
+        if (lower.contains("push up") || lower.contains("pushup") || lower.contains("push-up")) return "Push-ups";
+        if (lower.contains("pull up") || lower.contains("pullup") || lower.contains("pull-up")) return "Pull-ups";
+        if (lower.contains("bicep") || lower.contains("curl")) return "Bicep Curls";
+        if (lower.contains("plank")) return "Plank";
+        if (lower.contains("jump rope") || lower.contains("skipping")) return "Jump Rope";
+        if (lower.contains("gym") || lower.contains("weight")) return "Weight Training";
+        if (lower.contains("cardio")) return "Cardio";
+        return capitalizeWords(raw.trim());
+    }
+
+    private String buildWorkoutLoggedReply(List<WorkoutResponse> loggedWorkouts) {
+        StringBuilder sb = new StringBuilder("💪 **Logged to your Workouts:**\n\n");
+        int totalMinutes = 0;
+        double totalCal = 0;
+        for (WorkoutResponse w : loggedWorkouts) {
+            sb.append("• **").append(w.getExercise()).append("** — ");
+            if (w.getDuration() != null && w.getDuration() > 0) {
+                sb.append(w.getDuration()).append(" min");
+            }
+            if (w.getSets() != null && w.getSets() > 0) {
+                sb.append(" (").append(w.getSets()).append(" sets");
+                if (w.getReps() != null && w.getReps() > 0) {
+                    sb.append(" × ").append(w.getReps()).append(" reps");
+                }
+                sb.append(")");
+            }
+            if (w.getCaloriesBurned() != null && w.getCaloriesBurned() > 0) {
+                sb.append(" · **").append(Math.round(w.getCaloriesBurned())).append(" kcal** burned");
+            }
+            sb.append("\n");
+            totalMinutes += w.getDuration() != null ? w.getDuration() : 0;
+            totalCal += w.getCaloriesBurned() != null ? w.getCaloriesBurned() : 0;
+        }
+        sb.append("\n**Total Active Time:** ").append(totalMinutes).append(" mins");
+        if (totalCal > 0) {
+            sb.append(" · **Est. Burned:** ").append(Math.round(totalCal)).append(" kcal");
+        }
+        sb.append(".\n\nAwesome work staying active today! Your Workout log and Dashboard have been updated.");
+        return sb.toString();
+    }
+
+    private String buildCombinedLoggedReply(List<FoodLogResponse> loggedFoods, List<WorkoutResponse> loggedWorkouts) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(buildFoodLoggedReply(loggedFoods));
+        sb.append("\n\n---\n\n");
+        sb.append(buildWorkoutLoggedReply(loggedWorkouts));
+        return sb.toString();
     }
 
     private String capitalizeWords(String str) {

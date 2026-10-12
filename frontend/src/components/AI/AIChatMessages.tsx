@@ -5,6 +5,7 @@ import type { AICoachState } from '../../hooks/useAICoach';
 import { cn } from '../../utils/helpers';
 import { MarkdownMessage } from './MarkdownMessage';
 import { LoggedFoodsCard } from './LoggedFoodsCard';
+import { LoggedWorkoutsCard } from './LoggedWorkoutsCard';
 
 interface AIChatMessagesProps {
   messages: ChatMessage[];
@@ -77,6 +78,9 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry: () =>
             <MarkdownMessage content={message.content} isUser={isUser} />
             {message.loggedFoods && message.loggedFoods.length > 0 && (
               <LoggedFoodsCard entries={message.loggedFoods} />
+            )}
+            {message.loggedWorkouts && message.loggedWorkouts.length > 0 && (
+              <LoggedWorkoutsCard entries={message.loggedWorkouts} />
             )}
           </>
         )}

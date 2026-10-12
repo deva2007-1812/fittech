@@ -9,6 +9,7 @@ import { cn } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 import { MarkdownMessage } from '../../components/AI/MarkdownMessage';
 import { LoggedFoodsCard } from '../../components/AI/LoggedFoodsCard';
+import { LoggedWorkoutsCard } from '../../components/AI/LoggedWorkoutsCard';
 
 function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () => void }) {
   const isUser = message.role === 'user';
@@ -43,6 +44,9 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () =
             <MarkdownMessage content={message.content} isUser={isUser} />
             {message.loggedFoods && message.loggedFoods.length > 0 && (
               <LoggedFoodsCard entries={message.loggedFoods} />
+            )}
+            {message.loggedWorkouts && message.loggedWorkouts.length > 0 && (
+              <LoggedWorkoutsCard entries={message.loggedWorkouts} />
             )}
           </>
         )}
@@ -133,11 +137,16 @@ export function AICoachPage() {
         .filter(m => !m.isLoading)
         .map(m => ({ role: m.role, content: m.content }));
 
-      const { reply, loggedFoods } = await aiService.sendMessage(text.trim(), history);
+      const { reply, loggedFoods, loggedWorkouts } = await aiService.sendMessage(text.trim(), history);
 
       if (loggedFoods && loggedFoods.length > 0) {
         window.dispatchEvent(new CustomEvent('fitmind:food-logged', { detail: loggedFoods }));
         toast.success(`Logged ${loggedFoods.length} food item(s) to Nutrition!`, { icon: '🍎' });
+      }
+
+      if (loggedWorkouts && loggedWorkouts.length > 0) {
+        window.dispatchEvent(new CustomEvent('fitmind:workout-logged', { detail: loggedWorkouts }));
+        toast.success(`Logged ${loggedWorkouts.length} workout(s) to Workout Tracker!`, { icon: '💪' });
       }
 
       setMessages(prev =>
@@ -147,6 +156,7 @@ export function AICoachPage() {
                 ...m,
                 content: reply || "I've reviewed your request! How else can I help?",
                 loggedFoods: loggedFoods,
+                loggedWorkouts: loggedWorkouts,
                 isLoading: false,
               }
             : m
@@ -230,10 +240,11 @@ export function AICoachPage() {
 
   const suggestions = [
     'Log food: 2 boiled eggs and 1 slice toast for breakfast',
+    'I just ran for 30 minutes and burned 250 calories',
+    'Log workout: 3 sets of 10 bench press',
     'I ate 2 rotis and 1 bowl dal for lunch',
     'What should I eat for dinner based on my remaining calories?',
-    'Did I hit my protein goal today?',
-    'How much more water should I drink today?',
+    'Did I hit my workout and calorie targets today?',
   ];
 
   return (
