@@ -14,17 +14,17 @@ import java.util.UUID;
 @Repository
 public interface FoodLogRepository extends JpaRepository<FoodLog, UUID> {
 
-    @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId AND DATE(fl.loggedAt) = :date ORDER BY fl.loggedAt")
+    @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId AND CAST(fl.loggedAt AS LocalDate) = :date ORDER BY fl.loggedAt")
     List<FoodLog> findByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
-    @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId AND DATE(fl.loggedAt) BETWEEN :from AND :to ORDER BY fl.loggedAt")
+    @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId AND CAST(fl.loggedAt AS LocalDate) BETWEEN :from AND :to ORDER BY fl.loggedAt")
     List<FoodLog> findByUserIdAndDateRange(@Param("userId") UUID userId,
                                            @Param("from") LocalDate from,
                                            @Param("to") LocalDate to);
 
     Optional<FoodLog> findByIdAndUserId(UUID id, UUID userId);
 
-    @Query("SELECT SUM(fl.calories) FROM FoodLog fl WHERE fl.user.id = :userId AND DATE(fl.loggedAt) = :date")
+    @Query("SELECT SUM(fl.calories) FROM FoodLog fl WHERE fl.user.id = :userId AND CAST(fl.loggedAt AS LocalDate) = :date")
     Double sumCaloriesByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
     @Query("SELECT fl FROM FoodLog fl WHERE fl.user.id = :userId ORDER BY fl.loggedAt DESC LIMIT 20")

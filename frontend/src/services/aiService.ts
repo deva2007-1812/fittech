@@ -2,8 +2,11 @@ import api from './api';
 import type { ChatMessage, AIInsight, FoodEntry } from '../types';
 
 export const aiService = {
-  sendMessage: async (message: string, history?: { role: string; content: string }[]): Promise<{ reply: string }> => {
-    const response = await api.post<{ reply: string }>('/ai/chat', { message, history });
+  sendMessage: async (
+    message: string,
+    history?: { role: string; content: string }[]
+  ): Promise<{ reply: string; loggedFoods?: FoodEntry[] }> => {
+    const response = await api.post<{ reply: string; loggedFoods?: FoodEntry[] }>('/ai/chat', { message, history });
     return response.data;
   },
 

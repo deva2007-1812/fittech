@@ -1,6 +1,7 @@
 package com.fitmind.dto;
 
 import lombok.*;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -8,4 +9,5 @@ import lombok.*;
 @Builder
 public class AiChatResponse {
     private String reply;
+    private List<FoodLogResponse> loggedFoods;
 }

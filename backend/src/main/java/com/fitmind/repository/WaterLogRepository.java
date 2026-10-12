@@ -14,17 +14,17 @@ import java.util.UUID;
 @Repository
 public interface WaterLogRepository extends JpaRepository<WaterLog, UUID> {
 
-    @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId AND DATE(w.loggedAt) = :date ORDER BY w.loggedAt")
+    @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId AND CAST(w.loggedAt AS LocalDate) = :date ORDER BY w.loggedAt")
     List<WaterLog> findByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
-    @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId AND DATE(w.loggedAt) BETWEEN :from AND :to ORDER BY w.loggedAt DESC")
+    @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId AND CAST(w.loggedAt AS LocalDate) BETWEEN :from AND :to ORDER BY w.loggedAt DESC")
     List<WaterLog> findByUserIdAndDateRange(@Param("userId") UUID userId,
                                              @Param("from") LocalDate from,
                                              @Param("to") LocalDate to);
 
     Optional<WaterLog> findByIdAndUserId(UUID id, UUID userId);
 
-    @Query("SELECT SUM(w.amount) FROM WaterLog w WHERE w.user.id = :userId AND DATE(w.loggedAt) = :date")
+    @Query("SELECT SUM(w.amount) FROM WaterLog w WHERE w.user.id = :userId AND CAST(w.loggedAt AS LocalDate) = :date")
     Integer sumAmountByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
     @Query("SELECT w FROM WaterLog w WHERE w.user.id = :userId ORDER BY w.loggedAt DESC LIMIT 20")

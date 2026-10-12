@@ -139,17 +139,24 @@ public class NutritionService {
                     .loggedAt(loggedAt)
                     .build();
         } else {
-            // Food not found – create entry with name only (user can provide manual data)
+            // Food not found in DB – use provided estimated macros (e.g. from AI) or zero
+            double cal = request.getCalories() != null ? round(request.getCalories()) : 0.0;
+            double prot = request.getProtein() != null ? round(request.getProtein()) : 0.0;
+            double carbs = request.getCarbs() != null ? round(request.getCarbs()) : 0.0;
+            double fat = request.getFat() != null ? round(request.getFat()) : 0.0;
+            String parsedUnit = rawQty.replaceAll("[0-9.\\s]", "").trim();
+            String finalUnit = !parsedUnit.isBlank() ? parsedUnit : "serving";
+
             log = FoodLog.builder()
                     .user(user)
                     .foodName(request.getFoodName())
                     .quantity(BigDecimal.valueOf(quantity))
-                    .unit("serving")
+                    .unit(finalUnit)
                     .mealType(mealType)
-                    .calories(BigDecimal.ZERO)
-                    .protein(BigDecimal.ZERO)
-                    .carbohydrates(BigDecimal.ZERO)
-                    .fat(BigDecimal.ZERO)
+                    .calories(BigDecimal.valueOf(cal))
+                    .protein(BigDecimal.valueOf(prot))
+                    .carbohydrates(BigDecimal.valueOf(carbs))
+                    .fat(BigDecimal.valueOf(fat))
                     .loggedAt(loggedAt)
                     .build();
         }

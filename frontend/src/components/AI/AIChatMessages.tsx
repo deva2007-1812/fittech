@@ -4,6 +4,7 @@ import type { ChatMessage } from '../../types';
 import type { AICoachState } from '../../hooks/useAICoach';
 import { cn } from '../../utils/helpers';
 import { MarkdownMessage } from './MarkdownMessage';
+import { LoggedFoodsCard } from './LoggedFoodsCard';
 
 interface AIChatMessagesProps {
   messages: ChatMessage[];
@@ -72,7 +73,12 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry: () =>
             <span className="text-xs text-neutral-400">Thinking…</span>
           </div>
         ) : (
-          <MarkdownMessage content={message.content} isUser={isUser} />
+          <>
+            <MarkdownMessage content={message.content} isUser={isUser} />
+            {message.loggedFoods && message.loggedFoods.length > 0 && (
+              <LoggedFoodsCard entries={message.loggedFoods} />
+            )}
+          </>
         )}
 
         <div className="flex items-center justify-between mt-1 gap-2">

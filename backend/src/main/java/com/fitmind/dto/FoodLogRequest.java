@@ -20,4 +20,9 @@ public class FoodLogRequest {
     private MealType mealType;
 
     private String date; // ISO date yyyy-MM-dd, defaults to today
+
+    private Double calories;
+    private Double protein;
+    private Double carbs;
+    private Double fat;
 }

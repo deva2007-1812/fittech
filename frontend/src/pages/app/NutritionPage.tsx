@@ -412,6 +412,18 @@ export function NutritionPage() {
 
   useEffect(() => {
     fetchNutritionData();
+
+    const handleFoodLogged = () => {
+      fetchNutritionData();
+    };
+
+    window.addEventListener('fitmind:food-logged', handleFoodLogged);
+    window.addEventListener('focus', handleFoodLogged);
+
+    return () => {
+      window.removeEventListener('fitmind:food-logged', handleFoodLogged);
+      window.removeEventListener('focus', handleFoodLogged);
+    };
   }, []);
 
   const totals = log?.totals || { calories: 0, protein: 0, carbs: 0, fat: 0 };

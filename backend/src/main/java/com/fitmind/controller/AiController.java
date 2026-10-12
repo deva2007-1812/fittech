@@ -62,15 +62,14 @@ public class AiController {
             return ResponseEntity.badRequest().build();
         }
 
-        List<FoodLogResponse> foodEntries = aiService.processFoodFromText(
-                authUtils.getCurrentUserId(), transcript, MealType.SNACK);
-
         AiChatRequest chatReq = AiChatRequest.builder().message(transcript).build();
         AiChatResponse chatResp = aiService.chat(authUtils.getCurrentUserId(), chatReq);
+        List<FoodLogResponse> foodEntries = chatResp.getLoggedFoods() != null ? chatResp.getLoggedFoods() : Collections.emptyList();
 
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("reply", chatResp.getReply());
         response.put("foodEntries", foodEntries);
+        response.put("loggedFoods", foodEntries);
         return ResponseEntity.ok(response);
     }
 

@@ -8,6 +8,7 @@ import type { ChatMessage } from '../../types';
 import { cn } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 import { MarkdownMessage } from '../../components/AI/MarkdownMessage';
+import { LoggedFoodsCard } from '../../components/AI/LoggedFoodsCard';
 
 function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () => void }) {
   const isUser = message.role === 'user';
@@ -38,7 +39,12 @@ function ChatBubble({ message, onRetry }: { message: ChatMessage; onRetry?: () =
             <span className="text-xs text-neutral-400">Thinking…</span>
           </div>
         ) : (
-          <MarkdownMessage content={message.content} isUser={isUser} />
+          <>
+            <MarkdownMessage content={message.content} isUser={isUser} />
+            {message.loggedFoods && message.loggedFoods.length > 0 && (
+              <LoggedFoodsCard entries={message.loggedFoods} />
+            )}
+          </>
         )}
 
         <div className="flex items-center justify-between mt-1.5 gap-2">
@@ -127,12 +133,22 @@ export function AICoachPage() {
         .filter(m => !m.isLoading)
         .map(m => ({ role: m.role, content: m.content }));
 
-      const { reply } = await aiService.sendMessage(text.trim(), history);
+      const { reply, loggedFoods } = await aiService.sendMessage(text.trim(), history);
+
+      if (loggedFoods && loggedFoods.length > 0) {
+        window.dispatchEvent(new CustomEvent('fitmind:food-logged', { detail: loggedFoods }));
+        toast.success(`Logged ${loggedFoods.length} food item(s) to Nutrition!`, { icon: '🍎' });
+      }
 
       setMessages(prev =>
         prev.map(m =>
           m.id === loadingMsg.id
-            ? { ...m, content: reply || "I've reviewed your request! How else can I help?", isLoading: false }
+            ? {
+                ...m,
+                content: reply || "I've reviewed your request! How else can I help?",
+                loggedFoods: loggedFoods,
+                isLoading: false,
+              }
             : m
         )
       );
@@ -213,9 +229,10 @@ export function AICoachPage() {
   };
 
   const suggestions = [
+    'Log food: 2 boiled eggs and 1 slice toast for breakfast',
+    'I ate 2 rotis and 1 bowl dal for lunch',
     'What should I eat for dinner based on my remaining calories?',
     'Did I hit my protein goal today?',
-    'Suggest a quick 20-minute bodyweight workout.',
     'How much more water should I drink today?',
   ];
 

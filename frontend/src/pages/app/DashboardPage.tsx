@@ -40,6 +40,18 @@ export function DashboardPage() {
 
   useEffect(() => {
     loadData();
+
+    const handleFoodLogged = () => {
+      loadData();
+    };
+
+    window.addEventListener('fitmind:food-logged', handleFoodLogged);
+    window.addEventListener('focus', handleFoodLogged);
+
+    return () => {
+      window.removeEventListener('fitmind:food-logged', handleFoodLogged);
+      window.removeEventListener('focus', handleFoodLogged);
+    };
   }, []);
 
   if (isLoading) {

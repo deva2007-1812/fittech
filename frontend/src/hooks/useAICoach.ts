@@ -97,12 +97,22 @@ export function useAICoach(): UseAICoachReturn {
         .map(m => ({ role: m.role, content: m.content }));
 
       setAiState('responding');
-      const { reply } = await aiService.sendMessage(text.trim(), history);
+      const data = await aiService.sendMessage(text.trim(), history);
+
+      if (data.loggedFoods && data.loggedFoods.length > 0) {
+        window.dispatchEvent(new CustomEvent('fitmind:food-logged', { detail: data.loggedFoods }));
+        toast.success(`Logged ${data.loggedFoods.length} food item(s) to Nutrition!`, { icon: '🍎' });
+      }
 
       setMessages(prev =>
         prev.map(m =>
           m.id === loadingMsg.id
-            ? { ...m, content: reply || "I've reviewed your data! How else can I help?", isLoading: false }
+            ? {
+                ...m,
+                content: data.reply || "I've reviewed your data! How else can I help?",
+                loggedFoods: data.loggedFoods,
+                isLoading: false,
+              }
             : m
         )
       );
